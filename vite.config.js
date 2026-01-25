@@ -2,9 +2,88 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    {
+      name: 'image-proxy',
+      configureServer(server) {
+        server.middlewares.use('/__image_proxy', async (req, res) => {
+          try {
+            const requestUrl = new URL(req.url ?? '', 'http://vite.local')
+            const rawTarget = requestUrl.searchParams.get('url')
+            if (!rawTarget) {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+              res.end('Missing url')
+              return
+            }
+
+            let targetUrl
+            try {
+              targetUrl = new URL(rawTarget)
+            } catch {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+              res.end('Invalid url')
+              return
+            }
+
+            if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+              res.end('Unsupported protocol')
+              return
+            }
+
+            const hostname = targetUrl.hostname.toLowerCase()
+            const allowed = hostname === 'apod.nasa.gov' || hostname.endsWith('.nasa.gov')
+            if (!allowed) {
+              res.statusCode = 403
+              res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+              res.end('Host not allowed')
+              return
+            }
+
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 15000)
+            let upstream
+            try {
+              upstream = await fetch(targetUrl.href, {
+                redirect: 'follow',
+                signal: controller.signal,
+                headers: {
+                  accept: 'image/*,*/*;q=0.8',
+                  referer: 'https://apod.nasa.gov/',
+                  'user-agent': 'Mozilla/5.0',
+                },
+              })
+            } finally {
+              clearTimeout(timeoutId)
+            }
+
+            res.statusCode = upstream.status
+
+            const contentType = upstream.headers.get('content-type')
+            if (contentType) res.setHeader('Content-Type', contentType)
+            res.setHeader('X-Content-Type-Options', 'nosniff')
+            res.setHeader('Cache-Control', upstream.headers.get('cache-control') || 'public, max-age=86400')
+
+            const body = Buffer.from(await upstream.arrayBuffer())
+            res.end(body)
+          } catch (error) {
+            if (res.headersSent) {
+              res.end()
+              return
+            }
+
+            const message = error instanceof Error ? error.message : String(error)
+            res.statusCode = 502
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end(message)
+          }
+        })
+      },
+    },
     react(),
     VitePWA({
       registerType: 'autoUpdate',

@@ -123,6 +123,22 @@ function createCanvas(size) {
   return canvas
 }
 
+function toProxiedImageUrl(url) {
+  if (typeof url !== 'string') return url
+  if (typeof window === 'undefined') return url
+
+  try {
+    const resolved = new URL(url, window.location.href)
+    if (resolved.protocol === 'data:' || resolved.protocol === 'blob:') return url
+    if (resolved.protocol !== 'http:' && resolved.protocol !== 'https:') return url
+    if (resolved.origin === window.location.origin) return resolved.href
+    if (!import.meta.env.DEV) return resolved.href
+    return `/__image_proxy?url=${encodeURIComponent(resolved.href)}`
+  } catch {
+    return url
+  }
+}
+
 async function loadImageFromUrl(url, { signal } = {}) {
   throwIfAborted(signal)
 
@@ -411,7 +427,8 @@ async function setCachedFeatures(cacheKey, features) {
 async function analyzeNow(input, { signal } = {}) {
   throwIfAborted(signal)
 
-  const imageLike = await resolveImageInput(input, { signal })
+  const analysisInput = typeof input === 'string' ? toProxiedImageUrl(input) : input
+  const imageLike = await resolveImageInput(analysisInput, { signal })
   if (!imageLike) return DEFAULT_FEATURES
 
   const { canvas, ctx } = normalizeToSquareCanvas(imageLike, { maxSize: 256 })
@@ -419,8 +436,8 @@ async function analyzeNow(input, { signal } = {}) {
 
   let pixelFeatures = DEFAULT_FEATURES
   try {
-    if (typeof input === 'string' && typeof Worker !== 'undefined') {
-      pixelFeatures = await analyzePixelFeaturesInWorker(input, { signal, maxSize: 256 })
+    if (typeof analysisInput === 'string' && typeof Worker !== 'undefined') {
+      pixelFeatures = await analyzePixelFeaturesInWorker(analysisInput, { signal, maxSize: 256 })
     } else {
       pixelFeatures = await extractPixelFeatures(ctx, canvas.width, canvas.height, { signal })
     }

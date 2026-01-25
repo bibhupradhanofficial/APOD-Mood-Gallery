@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react'
 import {
   APODGallery,
   CollectionBuilder,
+  DailyDiscovery,
   ExoplanetExplorer,
   ForYouFeed,
   MoodBoardCreator,
+  SpaceQuiz,
   SolarSystem,
   SemanticSearch,
   TimelineExplorer,
@@ -35,7 +37,11 @@ function App() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
       const view = params.get('view')
-      if (view && ['gallery', 'search', 'collections', 'foryou', 'moodboard', 'timeline', 'exoplanets', 'solarsystem'].includes(view)) return view
+      if (
+        view &&
+        ['gallery', 'daily', 'search', 'collections', 'foryou', 'moodboard', 'timeline', 'exoplanets', 'solarsystem', 'quiz'].includes(view)
+      )
+        return view
     }
     return 'gallery'
   })
@@ -63,6 +69,8 @@ function App() {
     switch (activeView) {
       case 'gallery':
         return <APODGallery />
+      case 'daily':
+        return <DailyDiscovery />
       case 'search':
         return <SemanticSearch />
       case 'collections':
@@ -77,6 +85,8 @@ function App() {
         return <ExoplanetExplorer />
       case 'solarsystem':
         return <SolarSystem />
+      case 'quiz':
+        return <SpaceQuiz />
       default:
         return <APODGallery />
     }
@@ -102,6 +112,9 @@ function App() {
             <NavButton active={activeView === 'gallery'} onClick={() => setActiveView('gallery')}>
               Gallery
             </NavButton>
+            <NavButton active={activeView === 'daily'} onClick={() => setActiveView('daily')}>
+              Daily
+            </NavButton>
             <NavButton active={activeView === 'search'} onClick={() => setActiveView('search')}>
               Mood Search
             </NavButton>
@@ -122,6 +135,9 @@ function App() {
             </NavButton>
             <NavButton active={activeView === 'solarsystem'} onClick={() => setActiveView('solarsystem')}>
               Solar System
+            </NavButton>
+            <NavButton active={activeView === 'quiz'} onClick={() => setActiveView('quiz')}>
+              Quiz
             </NavButton>
           </nav>
         </div>
