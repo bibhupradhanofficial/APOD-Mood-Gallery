@@ -93,7 +93,7 @@ export default function MoodBoardCreator({ initialItems = [] }) {
       .join('|')
   }, [initialItems])
 
-  const stableInitialItems = useMemo(() => initialItems, [initialItemsSignature])
+  const stableInitialItems = useMemo(() => initialItems, [initialItems])
 
   const itemsSignature = useMemo(() => {
     if (!Array.isArray(items) || items.length === 0) return ''

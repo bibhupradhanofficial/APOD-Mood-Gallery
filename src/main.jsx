@@ -3,8 +3,11 @@ import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.jsx'
+import { ensureDesignSystemStyles } from './styles'
 
 registerSW({ immediate: true })
+
+ensureDesignSystemStyles()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

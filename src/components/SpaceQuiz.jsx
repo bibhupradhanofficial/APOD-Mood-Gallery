@@ -472,7 +472,7 @@ export default function SpaceQuiz() {
     let analysis = null
     try {
       analysis = await analyzeImage(target._src, { cacheKey: target._src, maxAgeMs: 14 * 24 * 60 * 60 * 1000 })
-    } catch (error) {
+    } catch {
       analysis = null
     }
     const palette = (analysis?.dominantColors ?? []).slice(0, 4)

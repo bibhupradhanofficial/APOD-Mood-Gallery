@@ -854,12 +854,12 @@ export default function DailyDiscovery() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {daily.picks.map((pick) => {
+            {daily.picks.map((pick, index) => {
               const src = normalizeSrc(pick?.item)
               const analysis = src ? analysisBySrc[src] : null
               return (
                 <PickCard
-                  key={String(pick?.item?.date ?? src ?? Math.random())}
+                  key={String(pick?.item?.date ?? src ?? index)}
                   pick={pick}
                   analysis={analysis}
                   moodOfDay={daily.moodOfDay}

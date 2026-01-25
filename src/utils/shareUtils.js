@@ -378,7 +378,8 @@ async function ensureImagesReady(root, { timeoutMs = 20000 } = {}) {
         if (proxied && proxied !== rawSrc) img.setAttribute('src', proxied)
         img.setAttribute('crossorigin', 'anonymous')
         img.setAttribute('referrerpolicy', 'no-referrer')
-      } catch {
+      } catch (error) {
+        void error
       }
 
       if (img.complete && img.naturalWidth > 0) return Promise.resolve()

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { Buffer } from 'node:buffer'
 
 export default defineConfig({
   plugins: [
@@ -204,4 +205,44 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      '/api/exoplanets-archive': {
+        target: 'https://exoplanetarchive.ipac.caltech.edu',
+        changeOrigin: true,
+        secure: true,
+        timeout: 12000,
+        proxyTimeout: 12000,
+        rewrite: (path) => path.replace(/^\/api\/exoplanets-archive/, ''),
+      },
+      '/api/exoplanets-eu': {
+        target: 'https://exoplanet.eu',
+        changeOrigin: true,
+        secure: true,
+        timeout: 20000,
+        proxyTimeout: 20000,
+        rewrite: (path) => path.replace(/^\/api\/exoplanets-eu/, ''),
+      },
+    },
+  },
+  preview: {
+    proxy: {
+      '/api/exoplanets-archive': {
+        target: 'https://exoplanetarchive.ipac.caltech.edu',
+        changeOrigin: true,
+        secure: true,
+        timeout: 12000,
+        proxyTimeout: 12000,
+        rewrite: (path) => path.replace(/^\/api\/exoplanets-archive/, ''),
+      },
+      '/api/exoplanets-eu': {
+        target: 'https://exoplanet.eu',
+        changeOrigin: true,
+        secure: true,
+        timeout: 20000,
+        proxyTimeout: 20000,
+        rewrite: (path) => path.replace(/^\/api\/exoplanets-eu/, ''),
+      },
+    },
+  },
 })

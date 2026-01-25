@@ -85,6 +85,131 @@ function writeExoplanetsCache({ items, fetchedAt, limit }) {
   }
 }
 
+function fetchWithTimeout(url, { timeoutMs = 12000, ...options } = {}) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), Math.max(1000, Number(timeoutMs) || 12000))
+  const signal = options.signal
+  if (signal && typeof signal.addEventListener === 'function') {
+    signal.addEventListener('abort', () => controller.abort(), { once: true })
+  }
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
+}
+
+function parseNumberOrNull(value) {
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
+}
+
+function parseCsvLine(line) {
+  const out = []
+  let cur = ''
+  let inQuotes = false
+  for (let i = 0; i < line.length; i += 1) {
+    const ch = line[i]
+    if (inQuotes) {
+      if (ch === '"') {
+        const next = line[i + 1]
+        if (next === '"') {
+          cur += '"'
+          i += 1
+        } else {
+          inQuotes = false
+        }
+      } else {
+        cur += ch
+      }
+      continue
+    }
+
+    if (ch === ',') {
+      out.push(cur)
+      cur = ''
+      continue
+    }
+    if (ch === '"') {
+      inQuotes = true
+      continue
+    }
+    cur += ch
+  }
+  out.push(cur)
+  return out
+}
+
+function estimateStellarLuminosityLog10({ starRadiusSolar, starTeffK } = {}) {
+  const r = Number(starRadiusSolar)
+  const t = Number(starTeffK)
+  if (!Number.isFinite(r) || r <= 0) return null
+  if (!Number.isFinite(t) || t <= 0) return null
+  const lum = Math.pow(r, 2) * Math.pow(t / 5772, 4)
+  if (!Number.isFinite(lum) || lum <= 0) return null
+  return Math.log10(lum)
+}
+
+function parseExoplanetsEuCsv(text, { limit }) {
+  const raw = String(text ?? '')
+  const lines = raw.split(/\r?\n/)
+  const header = parseCsvLine(lines[0] ?? '')
+  const idx = new Map(header.map((h, i) => [String(h).trim(), i]))
+
+  const get = (row, key) => {
+    const i = idx.get(key)
+    if (typeof i !== 'number') return ''
+    return row[i] ?? ''
+  }
+
+  const items = []
+  for (let i = 1; i < lines.length; i += 1) {
+    const line = lines[i]
+    if (!line) continue
+    const row = parseCsvLine(line)
+    const status = safeText(get(row, 'planet_status'))
+    if (status && status !== 'Confirmed') continue
+
+    const pl_name = safeText(get(row, 'name'))
+    const hostname = safeText(get(row, 'star_name'))
+    const disc_year = parseYear(get(row, 'discovered'))
+    if (!pl_name || !hostname || !disc_year) continue
+
+    const radiusJup = parseNumberOrNull(get(row, 'radius'))
+    const massJup = parseNumberOrNull(get(row, 'mass')) ?? parseNumberOrNull(get(row, 'mass_sini'))
+    const starRadiusSolar = parseNumberOrNull(get(row, 'star_radius'))
+    const st_teff = parseNumberOrNull(get(row, 'star_teff'))
+    const st_lum = estimateStellarLuminosityLog10({ starRadiusSolar, starTeffK: st_teff })
+
+    const pl_rade = radiusJup ? radiusJup * 11.209 : null
+    const pl_bmasse = massJup ? massJup * 317.828 : null
+
+    items.push({
+      pl_name,
+      hostname,
+      disc_year,
+      disc_pubdate: null,
+      discoverymethod: safeText(get(row, 'detection_type')),
+      pl_orbper: parseNumberOrNull(get(row, 'orbital_period')),
+      pl_orbsmax: parseNumberOrNull(get(row, 'semi_major_axis')),
+      pl_rade,
+      pl_bmasse,
+      pl_eqt: parseNumberOrNull(get(row, 'temp_calculated')),
+      st_lum,
+      st_teff,
+      sy_dist: parseNumberOrNull(get(row, 'star_distance')),
+    })
+  }
+
+  items.sort((a, b) => {
+    const ay = parseYear(a?.disc_year) ?? 0
+    const by = parseYear(b?.disc_year) ?? 0
+    if (ay !== by) return by - ay
+    const an = safeText(a?.pl_name) ?? ''
+    const bn = safeText(b?.pl_name) ?? ''
+    return an.localeCompare(bn)
+  })
+
+  const n = Math.max(20, Math.floor(Number(limit) || DEFAULT_LIMIT))
+  return items.slice(0, n)
+}
+
 function computeHabitableZoneAu({ st_lum, st_teff } = {}) {
   const lumLog = Number(st_lum)
   const teff = Number(st_teff)
@@ -598,11 +723,22 @@ export default function ExoplanetExplorer() {
           'order by disc_year desc, pl_name asc',
         ].join(' ')
 
-        const url = `https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=${encodeURIComponent(sql)}&format=json`
-        const res = await fetch(url)
-        if (!res.ok) throw new Error(`Exoplanet Archive error (${res.status})`)
-        const json = await res.json()
-        const items = Array.isArray(json) ? json : []
+        let items = []
+        try {
+          const url = `/api/exoplanets-archive/TAP/sync?query=${encodeURIComponent(sql)}&format=json`
+          const res = await fetchWithTimeout(url, { timeoutMs: 5000 })
+          if (!res.ok) throw new Error(`Exoplanet Archive error (${res.status})`)
+          const json = await res.json()
+          items = Array.isArray(json) ? json : []
+        } catch {
+          const res = await fetchWithTimeout('/api/exoplanets-eu/catalog/csv/', {
+            timeoutMs: 20000,
+            headers: { accept: 'text/csv' },
+          })
+          if (!res.ok) throw new Error(`Exoplanet dataset error (${res.status})`)
+          const text = await res.text()
+          items = parseExoplanetsEuCsv(text, { limit })
+        }
 
         setPlanets(items)
         writeExoplanetsCache({ items, fetchedAt: Date.now(), limit })

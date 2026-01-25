@@ -161,8 +161,16 @@ function Planet({ body, id, name, color, radiusKm, axisTiltDeg, scale, timeRef, 
   const meshRef = useRef(null)
   const updateRef = useRef(0)
   const renderRadius = useMemo(() => getPlanetRenderRadius(radiusKm, scale.radiusScale), [radiusKm, scale.radiusScale])
-  const axisLength = useMemo(() => Math.max(renderRadius * 5.5, 0.45), [renderRadius])
-  const axisLineWidth = useMemo(() => (renderRadius < 0.06 ? 2.25 : 1.5), [renderRadius])
+  const isOuterGiant = id === 'jupiter' || id === 'saturn' || id === 'uranus' || id === 'neptune'
+  const axisLength = useMemo(() => {
+    const base = renderRadius * (isOuterGiant ? 9.5 : 5.5)
+    const min = isOuterGiant ? 0.9 : 0.45
+    return Math.max(base, min)
+  }, [isOuterGiant, renderRadius])
+  const axisLineWidth = useMemo(() => {
+    if (isOuterGiant) return 2.4
+    return renderRadius < 0.06 ? 2.25 : 1.5
+  }, [isOuterGiant, renderRadius])
 
   useFrame((_, delta) => {
     updateRef.current += delta
