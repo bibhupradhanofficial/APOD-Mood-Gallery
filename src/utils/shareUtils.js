@@ -255,8 +255,32 @@ export function getApodImageUrl(apod, variant = 'original') {
   return null
 }
 
+function isHttpUrl(value) {
+  const s = String(value ?? '').trim()
+  return s.startsWith('http://') || s.startsWith('https://')
+}
+
+function proxifyImageUrl(rawUrl) {
+  const src = String(rawUrl ?? '').trim()
+  if (!src) return src
+  if (src.startsWith('data:') || src.startsWith('blob:')) return src
+  if (src.startsWith('/__image_proxy')) return src
+  if (!isHttpUrl(src)) return src
+
+  try {
+    const url = new URL(src)
+    const hostname = url.hostname.toLowerCase()
+    const allowed = hostname === 'apod.nasa.gov' || hostname.endsWith('.nasa.gov')
+    if (!allowed) return src
+    return `/__image_proxy?url=${encodeURIComponent(url.href)}`
+  } catch {
+    return src
+  }
+}
+
 async function fetchBlob(url) {
-  const res = await fetch(String(url), { mode: 'cors' })
+  const src = proxifyImageUrl(url)
+  const res = await fetch(String(src), { mode: 'cors' })
   if (!res.ok) throw new Error(`Failed to fetch (${res.status})`)
   return res.blob()
 }
@@ -343,10 +367,54 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([bytes], { type: mime })
 }
 
+async function ensureImagesReady(root, { timeoutMs = 20000 } = {}) {
+  if (!root?.querySelectorAll) return
+  const images = Array.from(root.querySelectorAll('img'))
+  await Promise.all(
+    images.map((img) => {
+      try {
+        const rawSrc = img.getAttribute('src') || ''
+        const proxied = proxifyImageUrl(rawSrc)
+        if (proxied && proxied !== rawSrc) img.setAttribute('src', proxied)
+        img.setAttribute('crossorigin', 'anonymous')
+        img.setAttribute('referrerpolicy', 'no-referrer')
+      } catch {
+      }
+
+      if (img.complete && img.naturalWidth > 0) return Promise.resolve()
+
+      return new Promise((resolve) => {
+        let settled = false
+        const done = () => {
+          if (settled) return
+          settled = true
+          img.removeEventListener('load', done)
+          img.removeEventListener('error', done)
+          resolve()
+        }
+
+        const id = setTimeout(done, timeoutMs)
+        const doneWithTimeoutClear = () => {
+          clearTimeout(id)
+          done()
+        }
+
+        img.addEventListener('load', doneWithTimeoutClear, { once: true })
+        img.addEventListener('error', doneWithTimeoutClear, { once: true })
+      })
+    })
+  )
+}
+
 export async function downloadElementAsPng(element, filename = 'mood_board.png', options = {}) {
   if (!element) throw new Error('Missing element')
   const { toPng } = await import('html-to-image')
-  const dataUrl = await toPng(element, { cacheBust: true, pixelRatio: 2, ...options })
+  const dataUrl = await toPng(element, {
+    cacheBust: false,
+    pixelRatio: 2,
+    imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==',
+    ...options,
+  })
   const blob = dataUrlToBlob(dataUrl)
   downloadBlobFile(String(filename), blob)
   return { blob, filename: String(filename) }
@@ -391,6 +459,7 @@ export async function downloadMoodBoardAsPng({
   document.body.appendChild(wrapper)
 
   try {
+    await ensureImagesReady(wrapper, { timeoutMs: 20000 })
     return await downloadElementAsPng(wrapper, filename, options)
   } finally {
     wrapper.remove()

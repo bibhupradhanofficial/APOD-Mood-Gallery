@@ -44,12 +44,12 @@ const POPULAR_BOARDS = [
     tags: ['Peaceful', 'Wonder', 'Vast'],
     layout: LAYOUTS.COLLAGE,
     items: [
-      { title: 'Nebula 1', url: 'https://apod.nasa.gov/apod/image/2101/Orion_Zhu_960.jpg', date: '2021-01-01' },
-      { title: 'Galaxy 2', url: 'https://apod.nasa.gov/apod/image/2101/M31_Hallas_960.jpg', date: '2021-01-02' },
-      { title: 'Star Cluster', url: 'https://apod.nasa.gov/apod/image/2101/Pleiades_Hallas_960.jpg', date: '2021-01-03' },
-      { title: 'Nebula 4', url: 'https://apod.nasa.gov/apod/image/2101/Rosette_Hallas_960.jpg', date: '2021-01-04' },
-      { title: 'Galaxy 5', url: 'https://apod.nasa.gov/apod/image/2101/M33_Hallas_960.jpg', date: '2021-01-05' },
-      { title: 'Star Field', url: 'https://apod.nasa.gov/apod/image/2101/Hyades_Hallas_960.jpg', date: '2021-01-06' },
+      { title: 'Nebula 1', url: 'https://apod.nasa.gov/apod/image/2101/2020_12_16_Kujal_Jizni_Pol_1500px-3.jpg', date: '2021-01-01' },
+      { title: 'Galaxy 2', url: 'https://apod.nasa.gov/apod/image/2101/WetCollodionLunar112820SMO_1024.jpg', date: '2021-01-02' },
+      { title: 'Star Cluster', url: 'https://apod.nasa.gov/apod/image/2101/PhoenixAurora_Helgason_960.jpg', date: '2021-01-03' },
+      { title: 'Nebula 4', url: 'https://apod.nasa.gov/apod/image/2101/SMC_Mtanous_960.jpg', date: '2021-01-05' },
+      { title: 'Galaxy 5', url: 'https://apod.nasa.gov/apod/image/2101/StripedDunes_HiRISE_1080.jpg', date: '2021-01-06' },
+      { title: 'Star Field', url: 'https://apod.nasa.gov/apod/image/2101/Tse_2020_400mm_dmwa-rot.jpg', date: '2021-01-07' },
     ]
   },
   {
@@ -59,12 +59,12 @@ const POPULAR_BOARDS = [
     tags: ['Energetic', 'Colorful', 'Nature'],
     layout: LAYOUTS.GRID_3X3,
     items: [
-        { title: 'Aurora 1', url: 'https://apod.nasa.gov/apod/image/2401/AuroraTree_Sloane_960.jpg', date: '2024-01-15'},
-        { title: 'Aurora 2', url: 'https://apod.nasa.gov/apod/image/2312/AuroraSpiral_Sloane_960.jpg', date: '2023-12-20'},
-        { title: 'Aurora 3', url: 'https://apod.nasa.gov/apod/image/2311/AuroraIceland_Sloane_960.jpg', date: '2023-11-10'},
-        { title: 'Aurora 4', url: 'https://apod.nasa.gov/apod/image/2310/AuroraReflection_Sloane_960.jpg', date: '2023-10-05'},
-        { title: 'Aurora 5', url: 'https://apod.nasa.gov/apod/image/2309/AuroraNorway_Sloane_960.jpg', date: '2023-09-12'},
-        { title: 'Aurora 6', url: 'https://apod.nasa.gov/apod/image/2308/AuroraCanada_Sloane_960.jpg', date: '2023-08-25'},
+        { title: 'Aurora 1', url: 'https://apod.nasa.gov/apod/fap/image/1703/AuroraTree_Wallace_2048.jpg', date: '2017-03-17' },
+        { title: 'Aurora 2', url: 'https://apod.nasa.gov/apod/fap/image/1703/AuroraIceland_Brynjarsson_960.jpg', date: '2017-03-03' },
+        { title: 'Aurora 3', url: 'https://apod.nasa.gov/apod/fap/image/1703/AuroraIceland_Brynjarsson_960_annotated.jpg', date: '2017-03-03' },
+        { title: 'Aurora 4', url: 'https://apod.nasa.gov/apod/fap/image/1605/AuroraSweden_Strand_1500.jpg', date: '2016-05-02' },
+        { title: 'Aurora 5', url: 'https://apod.nasa.gov/apod/fap/image/1605/AuroraSweden_Strand_960.jpg', date: '2016-05-02' },
+        { title: 'Aurora 6', url: 'https://apod.nasa.gov/apod/fap/image/1509/AuroraIceland_Necchi_1280.jpg', date: '2015-09-11' },
     ]
   }
 ]
@@ -84,6 +84,23 @@ export default function MoodBoardCreator({ initialItems = [] }) {
   const [activeTab, setActiveTab] = useState('editor') // 'editor', 'gallery'
 
   const boardRef = useRef(null)
+  const appliedSharePayloadRef = useRef(false)
+
+  const initialItemsSignature = useMemo(() => {
+    if (!Array.isArray(initialItems) || initialItems.length === 0) return ''
+    return initialItems
+      .map((i) => `${i?.date ?? ''}::${i?.title ?? ''}::${i?.url ?? ''}::${i?.hdurl ?? ''}::${i?.media_type ?? ''}`)
+      .join('|')
+  }, [initialItems])
+
+  const stableInitialItems = useMemo(() => initialItems, [initialItemsSignature])
+
+  const itemsSignature = useMemo(() => {
+    if (!Array.isArray(items) || items.length === 0) return ''
+    return items
+      .map((i) => `${i?.date ?? ''}::${i?.title ?? ''}::${i?.url ?? ''}::${i?.hdurl ?? ''}::${i?.media_type ?? ''}`)
+      .join('|')
+  }, [items])
 
   // Load collections on mount
   useEffect(() => {
@@ -95,14 +112,20 @@ export default function MoodBoardCreator({ initialItems = [] }) {
     if (payload) {
         const decoded = decodeCollectionPayload(payload)
         if (decoded && decoded.items) {
+            appliedSharePayloadRef.current = true
             setItems(decoded.items)
             setTitle(decoded.name || 'Shared Mood Board')
             if (decoded.theme) setTags([decoded.theme])
         }
-    } else if (initialItems.length > 0) {
-        setItems(initialItems)
     }
-  }, [initialItems])
+  }, [])
+
+  useEffect(() => {
+    if (appliedSharePayloadRef.current) return
+    if (!Array.isArray(stableInitialItems) || stableInitialItems.length === 0) return
+    if (itemsSignature === initialItemsSignature) return
+    setItems(stableInitialItems)
+  }, [initialItemsSignature, itemsSignature, stableInitialItems])
 
   // Helper to load a collection
   const handleLoadCollection = (collection) => {

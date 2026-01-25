@@ -743,7 +743,7 @@ export default function APODGallery() {
     <section className="mx-auto mt-10 w-full max-w-6xl">
       <WhereArePlanetsNow />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+        <div className="mt-8">
           <h2 className="text-xl font-semibold tracking-tight text-space-stardust">Gallery</h2>
           <p className="mt-2 max-w-2xl text-sm text-slate-200/75">
             Scroll to explore APOD images. Tap a card for the full-size view, description, and mood analysis.

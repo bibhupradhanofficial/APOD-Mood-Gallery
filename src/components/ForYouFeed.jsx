@@ -84,6 +84,16 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
     return preferenceLearner.subscribe(() => setPersonalizationTick((prev) => prev + 1))
   }, [])
 
+  const candidates = useMemo(() => {
+    const list = Array.isArray(items) ? items : []
+    return list.filter((item) => {
+      const mediaType = String(item?.media_type ?? 'image').toLowerCase()
+      if (mediaType && mediaType !== 'image') return false
+      const src = normalizeSrc(item)
+      return Boolean(src)
+    })
+  }, [items])
+
   useEffect(() => {
     let mounted = true
     queueMicrotask(() => {
@@ -117,7 +127,6 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
     let mounted = true
 
     ;(async () => {
-      const candidates = Array.isArray(items) ? items : []
       if (candidates.length === 0) return
 
       const missing = []
@@ -149,7 +158,7 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
       mounted = false
       controller.abort()
     }
-  }, [items])
+  }, [candidates])
 
   const favorites = useMemo(() => {
     void personalizationTick
@@ -157,7 +166,8 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
   }, [personalizationTick])
 
   const ranked = useMemo(() => {
-    const list = Array.isArray(items) ? items : []
+    void personalizationTick
+    const list = Array.isArray(candidates) ? candidates : []
     const filtered = list.filter((item) => {
       const key = normalizeFavoriteKey(item)
       if (!key) return false
@@ -169,13 +179,26 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
       limit: clamp(Number(maxCards) || 12, 4, 24),
       excludeSeen: true,
     })
-  }, [analysisBySrc, favorites, items, maxCards])
+  }, [analysisBySrc, candidates, favorites, maxCards, personalizationTick])
 
   const profile = useMemo(() => {
     void personalizationTick
     return preferenceLearner.getProfile()
   }, [personalizationTick])
   const hasSignal = profile?.stats?.likes > 0 || profile?.stats?.views > 0 || profile?.stats?.searches > 0
+
+  const analysisProgress = useMemo(() => {
+    const list = Array.isArray(candidates) ? candidates : []
+    const total = list.length
+    if (total <= 0) return { done: 0, total: 0 }
+    let done = 0
+    for (const item of list) {
+      const src = normalizeSrc(item)
+      if (!src) continue
+      if (analysisBySrc[src]) done += 1
+    }
+    return { done, total }
+  }, [analysisBySrc, candidates])
 
   return (
     <section className="rounded-2xl border border-white/10 bg-space-void/50 p-6 backdrop-blur">
@@ -236,7 +259,15 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
         </div>
       ) : (
         <div className="mt-6 text-sm text-slate-200/70">
-          {items.length === 0 ? 'No recent images found.' : 'Analyzing recent images for recommendations…'}
+          {items.length === 0
+            ? 'No recent images found.'
+            : candidates.length === 0
+              ? 'No recent image posts found.'
+              : analysisProgress.done < analysisProgress.total
+                ? `Analyzing recent images for recommendations… (${analysisProgress.done}/${analysisProgress.total})`
+                : hasSignal
+                  ? 'No unseen matches in this window yet. Try viewing or liking a few new images, or reset your history.'
+                  : 'Interact with a few images to personalize this feed.'}
         </div>
       )}
     </section>
