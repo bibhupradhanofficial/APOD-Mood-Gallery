@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-space-black text-slate-100 antialiased;
+    @apply bg-space-radial;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
