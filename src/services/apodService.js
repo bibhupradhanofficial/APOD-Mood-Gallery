@@ -384,17 +384,20 @@ export async function fetchAPODRange(startDate, endDate, count) {
   return result
 }
 
-export async function fetchRandomAPODs(count) {
+export async function fetchRandomAPODs(count, { bypassCache = false } = {}) {
   const countValue =
     typeof count === 'number' && Number.isFinite(count) && count > 0
       ? Math.min(100, Math.floor(count))
       : 1
 
   const cacheKey = makeCacheKey(['random', `count-${countValue}`])
-  const cached = readCache(cacheKey)
-  if (cached !== undefined) {
-    void storeApodItems(cached).catch(() => null)
-    return cached
+  
+  if (!bypassCache) {
+    const cached = readCache(cacheKey)
+    if (cached !== undefined) {
+      void storeApodItems(cached).catch(() => null)
+      return cached
+    }
   }
 
   if (isOffline()) return []

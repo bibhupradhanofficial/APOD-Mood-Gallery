@@ -131,8 +131,8 @@ function App() {
             </p>
           </div>
         </div>
-        <div className="mt-8">
-          <nav className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+        <div>
+          <nav className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 mt-8">
             <div className="ml-1">
             <NavButton
               active={activeView === "gallery"}

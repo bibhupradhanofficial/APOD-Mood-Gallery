@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { fetchAPODRange, queryApodsBySubject } from '../services'
 
-const EXO_CACHE_KEY = 'exoplanets-cache:v1'
+const EXO_CACHE_KEY = 'exoplanets-cache:v2'
 const EXO_CACHE_TTL_MS = 24 * 60 * 60 * 1000
-const DEFAULT_LIMIT = 700
+const DEFAULT_LIMIT = 350
 
 function clampNumber(value, min, max) {
   const n = Number(value)
@@ -93,6 +93,35 @@ function fetchWithTimeout(url, { timeoutMs = 12000, ...options } = {}) {
     signal.addEventListener('abort', () => controller.abort(), { once: true })
   }
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)))
+}
+
+async function fetchJsonWithRetries(url, { timeoutMs = 45000, attempts = 2 } = {}) {
+  let lastError
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      const res = await fetchWithTimeout(url, { timeoutMs })
+      if (!res.ok) throw new Error(`Request failed (${res.status})`)
+      return await res.json()
+    } catch (error) {
+      lastError = error
+      const isAbort =
+        (error instanceof Error && error.name === 'AbortError') || String(error?.name ?? '').toLowerCase() === 'aborterror'
+      if (isAbort && i < attempts - 1) {
+        await sleep(300 * Math.pow(2, i))
+        continue
+      }
+      if (i < attempts - 1) {
+        await sleep(250 * Math.pow(2, i))
+        continue
+      }
+      throw lastError
+    }
+  }
+  throw lastError ?? new Error('Request failed')
 }
 
 function parseNumberOrNull(value) {
@@ -718,21 +747,18 @@ export default function ExoplanetExplorer() {
           'pl_name, hostname, disc_year, disc_pubdate, discoverymethod,',
           'pl_orbper, pl_orbsmax, pl_rade, pl_bmasse, pl_eqt,',
           'st_lum, st_teff, sy_dist',
-          'from ps',
-          'where default_flag=1',
+          'from pscomppars',
           'order by disc_year desc, pl_name asc',
         ].join(' ')
 
         let items = []
         try {
           const url = `/api/exoplanets-archive/TAP/sync?query=${encodeURIComponent(sql)}&format=json`
-          const res = await fetchWithTimeout(url, { timeoutMs: 5000 })
-          if (!res.ok) throw new Error(`Exoplanet Archive error (${res.status})`)
-          const json = await res.json()
+          const json = await fetchJsonWithRetries(url, { timeoutMs: 120000, attempts: 2 })
           items = Array.isArray(json) ? json : []
         } catch {
           const res = await fetchWithTimeout('/api/exoplanets-eu/catalog/csv/', {
-            timeoutMs: 20000,
+            timeoutMs: 60000,
             headers: { accept: 'text/csv' },
           })
           if (!res.ok) throw new Error(`Exoplanet dataset error (${res.status})`)
@@ -744,9 +770,11 @@ export default function ExoplanetExplorer() {
         writeExoplanetsCache({ items, fetchedAt: Date.now(), limit })
         setStatus({ loading: false, error: '' })
       } catch (e) {
+        const isAbort =
+          (e instanceof Error && e.name === 'AbortError') || String(e?.name ?? '').toLowerCase() === 'aborterror'
         setStatus({
           loading: false,
-          error: e?.message ? String(e.message) : 'Failed to load exoplanets.',
+          error: isAbort ? 'Exoplanet request timed out. Please try again.' : e?.message ? String(e.message) : 'Failed to load exoplanets.',
         })
       }
     },

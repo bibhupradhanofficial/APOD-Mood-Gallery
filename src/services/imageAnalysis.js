@@ -132,7 +132,11 @@ function toProxiedImageUrl(url) {
     if (resolved.protocol === 'data:' || resolved.protocol === 'blob:') return url
     if (resolved.protocol !== 'http:' && resolved.protocol !== 'https:') return url
     if (resolved.origin === window.location.origin) return resolved.href
-    if (!import.meta.env.DEV) return resolved.href
+    
+    // Allow proxy in DEV or on localhost (e.g. vite preview)
+    const isLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
+    if (!import.meta.env.DEV && !isLocal) return resolved.href
+
     return `/__image_proxy?url=${encodeURIComponent(resolved.href)}`
   } catch {
     return url

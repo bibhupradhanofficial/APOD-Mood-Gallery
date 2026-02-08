@@ -3,6 +3,38 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { Buffer } from 'node:buffer'
 
+async function fetchWithRetries(url, { timeoutMs = 30000, attempts = 3, headers } = {}) {
+  let lastError
+  for (let i = 0; i < attempts; i += 1) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), Math.max(1000, Number(timeoutMs) || 30000))
+    try {
+      const res = await fetch(url, {
+        redirect: 'follow',
+        signal: controller.signal,
+        headers: {
+          'accept-encoding': 'identity',
+          'user-agent': 'Mozilla/5.0',
+          ...headers,
+        },
+      })
+      if (res.ok) return res
+      if (res.status === 429 || res.status >= 500) {
+        lastError = new Error(`Upstream error (${res.status})`)
+      } else {
+        return res
+      }
+    } catch (error) {
+      lastError = error
+    } finally {
+      clearTimeout(timeoutId)
+    }
+    const delay = 350 * Math.pow(2, i)
+    await new Promise((r) => setTimeout(r, delay))
+  }
+  throw lastError ?? new Error('Upstream fetch failed')
+}
+
 export default defineConfig({
   plugins: [
     {
@@ -162,6 +194,69 @@ export default defineConfig({
         })
       },
     },
+    {
+      name: 'exoplanet-proxy',
+      configureServer(server) {
+        server.middlewares.use('/api/exoplanets-eu', async (req, res) => {
+          try {
+            const targetUrl = new URL(req.url ?? '', 'https://exoplanet.eu')
+            const upstream = await fetchWithRetries(targetUrl.href, {
+              timeoutMs: 60000,
+              attempts: 3,
+              headers: {
+                accept: req.headers.accept || '*/*',
+              },
+            })
+
+            res.statusCode = upstream.status
+            const contentType = upstream.headers.get('content-type')
+            if (contentType) res.setHeader('Content-Type', contentType)
+            res.setHeader('Cache-Control', 'no-store')
+            const body = Buffer.from(await upstream.arrayBuffer())
+            res.end(body)
+          } catch (error) {
+            if (res.headersSent) {
+              res.end()
+              return
+            }
+            const message = error instanceof Error ? error.message : String(error)
+            res.statusCode = 502
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end(message)
+          }
+        })
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use('/api/exoplanets-eu', async (req, res) => {
+          try {
+            const targetUrl = new URL(req.url ?? '', 'https://exoplanet.eu')
+            const upstream = await fetchWithRetries(targetUrl.href, {
+              timeoutMs: 60000,
+              attempts: 3,
+              headers: {
+                accept: req.headers.accept || '*/*',
+              },
+            })
+
+            res.statusCode = upstream.status
+            const contentType = upstream.headers.get('content-type')
+            if (contentType) res.setHeader('Content-Type', contentType)
+            res.setHeader('Cache-Control', 'no-store')
+            const body = Buffer.from(await upstream.arrayBuffer())
+            res.end(body)
+          } catch (error) {
+            if (res.headersSent) {
+              res.end()
+              return
+            }
+            const message = error instanceof Error ? error.message : String(error)
+            res.statusCode = 502
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end(message)
+          }
+        })
+      },
+    },
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -211,16 +306,16 @@ export default defineConfig({
         target: 'https://exoplanetarchive.ipac.caltech.edu',
         changeOrigin: true,
         secure: true,
-        timeout: 12000,
-        proxyTimeout: 12000,
+        timeout: 180000,
+        proxyTimeout: 180000,
         rewrite: (path) => path.replace(/^\/api\/exoplanets-archive/, ''),
       },
       '/api/exoplanets-eu': {
         target: 'https://exoplanet.eu',
         changeOrigin: true,
         secure: true,
-        timeout: 20000,
-        proxyTimeout: 20000,
+        timeout: 180000,
+        proxyTimeout: 180000,
         rewrite: (path) => path.replace(/^\/api\/exoplanets-eu/, ''),
       },
     },
@@ -231,16 +326,16 @@ export default defineConfig({
         target: 'https://exoplanetarchive.ipac.caltech.edu',
         changeOrigin: true,
         secure: true,
-        timeout: 12000,
-        proxyTimeout: 12000,
+        timeout: 180000,
+        proxyTimeout: 180000,
         rewrite: (path) => path.replace(/^\/api\/exoplanets-archive/, ''),
       },
       '/api/exoplanets-eu': {
         target: 'https://exoplanet.eu',
         changeOrigin: true,
         secure: true,
-        timeout: 20000,
-        proxyTimeout: 20000,
+        timeout: 180000,
+        proxyTimeout: 180000,
         rewrite: (path) => path.replace(/^\/api\/exoplanets-eu/, ''),
       },
     },

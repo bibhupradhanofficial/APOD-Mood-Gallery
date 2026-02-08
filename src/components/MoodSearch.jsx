@@ -633,7 +633,8 @@ export default function MoodSearch({
       }
 
       for (let attempt = 0; attempt < 3; attempt += 1) {
-        const randoms = await fetchRandomAPODs(DEFAULT_SURPRISE_BATCH)
+        // Request fresh randoms to ensure we don't get stuck with the same cached set
+        const randoms = await fetchRandomAPODs(DEFAULT_SURPRISE_BATCH, { bypassCache: true })
         const list = Array.isArray(randoms) ? randoms : []
         for (const item of list) {
           const key = normalizeKey(item)
@@ -834,6 +835,9 @@ export default function MoodSearch({
                 </p>
                 {loadingCandidates ? (
                   <p className="mt-1 text-xs text-slate-200/70">Loading candidates…</p>
+                ) : null}
+                {surpriseRunning ? (
+                  <p className="mt-1 text-xs text-space-aurora animate-pulse">Searching the cosmos for a surprise match…</p>
                 ) : null}
                 {candidateError ? (
                   <p className="mt-1 text-xs text-rose-200/90">Couldn’t load APOD items for this range.</p>

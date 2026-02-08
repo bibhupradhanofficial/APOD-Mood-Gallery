@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { format, isValid, parseISO, subDays } from 'date-fns'
 
 import MoodSearch from './MoodSearch'
@@ -386,100 +386,34 @@ const EXAMPLE_QUERIES = [
   'Warm orange planets',
 ]
 
-function buildSuggestions(input) {
-  const q = normalizeText(input)
-  if (!q) return EXAMPLE_QUERIES.slice(0, 6)
-
-  const tokens = q.split(' ').filter(Boolean)
-  const last = tokens[tokens.length - 1] ?? ''
-  const suggestions = []
-
-  const synonymKeys = Object.keys({ ...MOOD_SYNONYMS, ...SUBJECT_SYNONYMS, ...COLOR_SYNONYMS })
-  if (last.length >= 2) {
-    const matches = synonymKeys
-      .filter((k) => k.startsWith(last))
-      .slice(0, 6)
-      .map((k) => {
-        const replaced = [...tokens.slice(0, -1), k].join(' ')
-        return replaced
-      })
-    suggestions.push(...matches)
-  }
-
-  const rankedExamples = EXAMPLE_QUERIES.filter((e) => normalizeText(e).includes(q))
-  suggestions.push(...rankedExamples)
-
-  const fallbackExamples = EXAMPLE_QUERIES.filter((e) => {
-    const t = normalizeText(e)
-    return tokens.some((w) => w.length >= 3 && t.includes(w))
-  })
-  suggestions.push(...fallbackExamples)
-
-  return unique(suggestions).slice(0, 8)
-}
-
 export default function SemanticSearch() {
   const today = useMemo(() => new Date(), [])
   const defaultEnd = useMemo(() => toISOInput(today), [today])
   const defaultStart = useMemo(() => toISOInput(subDays(today, 30)), [today])
 
   const [input, setInput] = useState('')
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1)
   const [appliedText, setAppliedText] = useState('')
 
   const parsed = useMemo(() => parseSemanticQuery(input, { today }), [input, today])
   const appliedParsed = useMemo(() => parseSemanticQuery(appliedText, { today }), [appliedText, today])
 
-  const suggestions = useMemo(() => buildSuggestions(input), [input])
-  const suggestionsRef = useRef(suggestions)
-  useEffect(() => {
-    suggestionsRef.current = suggestions
-  }, [suggestions])
-
   const applyQuery = useCallback(() => {
     setAppliedText(input)
-    setActiveSuggestionIndex(-1)
   }, [input])
 
   const applyExample = useCallback((example) => {
     setInput(example)
     setAppliedText(example)
-    setActiveSuggestionIndex(-1)
   }, [])
 
   const onKeyDown = useCallback(
     (e) => {
-      const list = suggestionsRef.current
       if (e.key === 'Enter') {
         e.preventDefault()
-        if (activeSuggestionIndex >= 0 && activeSuggestionIndex < list.length) {
-          const chosen = list[activeSuggestionIndex]
-          setInput(chosen)
-          setAppliedText(chosen)
-          setActiveSuggestionIndex(-1)
-          return
-        }
         applyQuery()
-        return
-      }
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setActiveSuggestionIndex((prev) => clamp(prev + 1, -1, Math.max(-1, list.length - 1)))
-        return
-      }
-
-      if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setActiveSuggestionIndex((prev) => clamp(prev - 1, -1, Math.max(-1, list.length - 1)))
-        return
-      }
-
-      if (e.key === 'Escape') {
-        setActiveSuggestionIndex(-1)
       }
     },
-    [activeSuggestionIndex, applyQuery]
+    [applyQuery]
   )
 
   const externalQuery = useMemo(() => {
@@ -521,13 +455,6 @@ export default function SemanticSearch() {
                 and dates.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => applyExample(EXAMPLE_QUERIES[0])}
-              className="hidden sm:inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-100/80 hover:bg-white/10"
-            >
-              Try an example
-            </button>
           </div>
 
           <div className="relative">
@@ -538,15 +465,11 @@ export default function SemanticSearch() {
                   value={input}
                   onChange={(e) => {
                     setInput(e.target.value)
-                    setActiveSuggestionIndex(-1)
                   }}
                   onKeyDown={onKeyDown}
                   placeholder="e.g. Show me calming purple nebulae"
                   className="mt-2 w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-400/70 outline-none focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                 />
-                <p className="mt-2 text-[11px] text-slate-200/60">
-                  Press Enter to apply. Use ↑/↓ to navigate suggestions.
-                </p>
               </div>
               <div className="flex items-end gap-2">
                 <button
@@ -561,7 +484,6 @@ export default function SemanticSearch() {
                   onClick={() => {
                     setInput('')
                     setAppliedText('')
-                    setActiveSuggestionIndex(-1)
                   }}
                   className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-100/80 hover:bg-white/10"
                 >
@@ -569,34 +491,6 @@ export default function SemanticSearch() {
                 </button>
               </div>
             </div>
-
-            {suggestions.length > 0 && input.trim().length > 0 ? (
-              <div className="mt-3 rounded-2xl border border-white/10 bg-black/25 p-3">
-                <div className="text-[11px] font-medium text-slate-200/70">Suggestions</div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {suggestions.map((s, idx) => (
-                    <button
-                      key={`${s}-${idx}`}
-                      type="button"
-                      onClick={() => {
-                        setInput(s)
-                        setAppliedText(s)
-                        setActiveSuggestionIndex(-1)
-                      }}
-                      onMouseEnter={() => setActiveSuggestionIndex(idx)}
-                      className={[
-                        'rounded-full border px-3 py-1 text-[11px] transition',
-                        idx === activeSuggestionIndex
-                          ? 'border-space-aurora/30 bg-space-aurora/10 text-space-aurora'
-                          : 'border-white/10 bg-white/5 text-slate-100/75 hover:bg-white/10',
-                      ].join(' ')}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
