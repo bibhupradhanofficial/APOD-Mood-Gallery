@@ -64,7 +64,7 @@ export default function About() {
         <p className="text-xs font-medium tracking-widest text-space-aurora/90 uppercase">
           About
         </p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-space-stardust sm:text-3xl">
+        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-space-stardust sm:text-3xl">
           APOD Mood Gallery
         </h2>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-200/80">
@@ -109,19 +109,23 @@ export default function About() {
             </ul>
           </div>
         </div>
+        <div className="mt-4 rounded-xl bg-white/5 px-4 py-3 text-xs text-slate-200/70 ring-1 ring-white/10">
+          <span className="text-space-aurora/80">system_info: </span>Built with React + Vite + Tailwind, powered by NASA&apos;s APOD data.
+        </div>
         {/* <div className="rounded-2xl bg-black/20 p-5 ring-1 ring-white/10"></div> */}
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-space-stardust sm:text-3xl">
+        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-space-stardust sm:text-3xl">
           Developer
         </h2>
-        <p className="mt-3 text-sm text-slate-200/75">
-          This project is built as a modern front-end experiment focused on
-          smooth browsing, thoughtful UI, and fun ways to interact with science
-          content. If you&apos;d like to personalize this section, update the
-          text in the About page component.
-        </p>
-        <div className="mt-4 rounded-xl bg-white/5 px-4 py-3 text-xs text-slate-200/70 ring-1 ring-white/10">
-          Built with React + Vite + Tailwind, powered by NASA&apos;s APOD data.
+        <div className="mt-3 flex flex-col gap-6 sm:flex-row sm:items-start text-left">
+          <div className="flex-1 text-center sm:text-left">
+            <h3 className="text-xl font-medium text-white">Bibhu Pradhan</h3>
+            <p className="mt-1 text-sm font-medium text-space-aurora/80">Full-Stack Developer & Creative Coder</p>
+            <p className="mt-4 text-sm leading-relaxed text-slate-400">
+              I’m Bibhu Pradhan, a passionate Software Developer driven by a vision to create meaningful impact in society through technology. With a strong foundation in software development and a keen interest in Generative AI (GenAI), I strive to build solutions that solve real-world problems and empower users with intelligent, efficient tools.
+            </p>
+          </div>
         </div>
+
         <div className="mt-4 flex items-center justify-center gap-3">
           {socialLinks.map((item) => (
             <a
