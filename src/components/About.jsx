@@ -117,7 +117,7 @@ export default function About() {
           Developer
         </h2>
         <div className="mt-3 flex flex-col gap-6 sm:flex-row sm:items-start text-left">
-          <div className="flex-1 text-center sm:text-left">
+          <div className="flex-1 sm:text-left">
             <h3 className="text-xl font-medium text-white">Bibhu Pradhan</h3>
             <p className="mt-1 text-sm font-medium text-space-aurora/80">Full-Stack Developer & Creative Coder</p>
             <p className="mt-4 text-sm leading-relaxed text-slate-400">
