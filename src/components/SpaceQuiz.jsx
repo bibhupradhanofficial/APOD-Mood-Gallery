@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { format, isValid, parseISO, subDays } from 'date-fns'
 
-import { analyzeImage, fetchAPODRange, getKv, setKv } from '../services'
+import { analyzeImage, fetchAPODRange, getKv, setKv, generateQuizQuestion, addUserPoints, supabase } from '../services'
 import { buildShareUrlWithMeta, copyToClipboard, getApodImageUrl, getSocialShareLinks, MOODS } from '../utils'
 
 const QUIZ_KV_KEY = 'spaceQuizProgress:v1'
@@ -13,6 +13,7 @@ const MODES = [
   { id: 'phenomenon', label: 'Name That Phenomenon', description: 'Use APOD titles as clues to identify the phenomenon.' },
   { id: 'color', label: 'Color Match', description: 'Match a palette to the correct image.' },
   { id: 'date', label: 'Before / After', description: 'Decide which APOD came earlier in time.' },
+  { id: 'ai-challenge', label: 'AI Cosmic Quiz', description: 'Test your literacy with AI-generated questions from recent APODs.' },
 ]
 
 const PHENOMENA = [
@@ -428,6 +429,15 @@ export default function SpaceQuiz() {
           },
         }
         persistProgress(next)
+
+        // Sync to Supabase if logged in
+        void (async () => {
+          const { data: sessionData } = await supabase.auth.getSession()
+          if (sessionData?.session?.user?.id && earnedPoints > 0) {
+            await addUserPoints(sessionData.session.user.id, earnedPoints)
+          }
+        })()
+
         return next
       })
     },
@@ -519,8 +529,26 @@ export default function SpaceQuiz() {
       const q = await buildColorQuestion()
       setQuestion(q ?? { type: 'color', state: 'error', error: 'Could not build color challenge.' })
     } else if (mode === 'date') setQuestion(buildDateQuestion())
+    else if (mode === 'ai-challenge') {
+      setQuestion({ type: 'ai-challenge', state: 'loading' })
+      const pick = pickRandom(pool, 1)[0]
+      const data = await generateQuizQuestion(pick)
+      if (data) {
+        setQuestion({
+          type: 'ai-challenge',
+          state: 'asking',
+          apod: pick,
+          src: pick._src,
+          ...data,
+          userChoice: null,
+          earned: 0
+        })
+      } else {
+        setQuestion({ type: 'ai-challenge', state: 'error', error: 'Gemini is orbiting another planet right now. Try again later.' })
+      }
+    }
     else setQuestion(buildMoodQuestion())
-  }, [pool.length, mode, buildMoodQuestion, buildPhenomenonQuestion, buildColorQuestion, buildDateQuestion])
+  }, [pool, mode, buildMoodQuestion, buildPhenomenonQuestion, buildColorQuestion, buildDateQuestion])
 
   useEffect(() => {
     if (poolStatus.loading || poolStatus.error) return
@@ -602,6 +630,17 @@ export default function SpaceQuiz() {
       const earned = wasCorrect ? 10 : 0
       setQuestion((prev) => ({ ...(prev ?? {}), state: 'revealed', userChoice, wasCorrect, earned }))
       advanceRound({ wasCorrect, earnedPoints: earned, learnedKey: 'timeline:ordering' })
+    },
+    [question, advanceRound]
+  )
+
+  const onSubmitAI = useCallback(
+    (index) => {
+      if (!question || question.type !== 'ai-challenge' || question.state !== 'asking') return
+      const wasCorrect = index === question.correctIndex
+      const earned = wasCorrect ? 15 : 0
+      setQuestion((prev) => ({ ...(prev ?? {}), state: 'revealed', userChoice: index, wasCorrect, earned }))
+      advanceRound({ wasCorrect, earnedPoints: earned, learnedKey: 'ai:literacy' })
     },
     [question, advanceRound]
   )
@@ -995,7 +1034,7 @@ export default function SpaceQuiz() {
           )}
 
           {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'color' && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="glass-card p-6">
               {question.state === 'loading' && (
                 <div className="text-sm text-slate-200">Preparing color challenge…</div>
               )}
@@ -1092,7 +1131,7 @@ export default function SpaceQuiz() {
           )}
 
           {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'date' && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="glass-card p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                 <div className="w-full lg:w-2/3">
                   <div className="grid grid-cols-2 gap-3">
@@ -1179,6 +1218,99 @@ export default function SpaceQuiz() {
                   )}
                 </div>
               </div>
+            </div>
+          )}
+
+          {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'ai-challenge' && (
+            <div className="glass-card p-4 sm:p-6 animate-in fade-in duration-500">
+              {question.state === 'loading' && (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-space-aurora border-t-transparent mb-4" />
+                  <div className="text-sm text-slate-200">Gemini is preparing your cosmic challenge…</div>
+                </div>
+              )}
+              {question.state === 'error' && (
+                <div className="rounded-lg border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-100">
+                  {question.error}
+                </div>
+              )}
+              {question.state !== 'loading' && question.state !== 'error' && (
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+                  <div className="w-full lg:w-2/3">
+                    <div className="overflow-hidden rounded-xl border border-white/10 bg-space-night/50 relative group shadow-2xl">
+                      <img src={question.src} alt={question.apod?.title ?? 'APOD'} className="h-auto w-full object-cover max-h-[500px]" />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p className="text-xs text-white uppercase tracking-tighter opacity-50">Reference Image / Date: {question.apod?.date}</p>
+                        <p className="text-sm font-bold text-white truncate">{question.apod?.title}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-1/3">
+                    <div className="flex items-center gap-2 mb-2">
+                       <span className="h-2 w-2 rounded-full bg-space-aurora animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                       <span className="text-[10px] font-bold tracking-[0.2em] text-space-aurora uppercase">AI Cosmic Challenge</span>
+                    </div>
+                    <p className="mt-1 text-base font-semibold text-white leading-relaxed">{question.question}</p>
+
+                    <div className="mt-6 grid grid-cols-1 gap-2.5">
+                      {question.options.map((opt, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          disabled={question.state !== 'asking'}
+                          onClick={() => onSubmitAI(idx)}
+                          className={[
+                            'rounded-xl px-5 py-3.5 text-sm font-medium ring-1 transition-all text-left relative overflow-hidden group',
+                            question.state === 'asking'
+                              ? 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/[0.08] hover:translate-x-1 hover:ring-white/20'
+                              : question.correctIndex === idx
+                                ? 'bg-emerald-500/20 text-emerald-100 ring-emerald-500/40'
+                                : question.userChoice === idx
+                                  ? 'bg-rose-500/20 text-rose-100 ring-rose-500/40'
+                                  : 'bg-white/5 text-slate-400 ring-white/10 opacity-40',
+                          ].join(' ')}
+                        >
+                          <div className="flex items-center gap-4">
+                            <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 group-hover:text-space-aurora group-hover:border-space-aurora/40 transition-colors uppercase">
+                              {String.fromCharCode(65 + idx)}
+                            </span>
+                            <span className="leading-snug">{opt}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {question.state === 'revealed' && (
+                      <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-2xl backdrop-blur-sm ring-1 ring-white/5">
+                          <div className="flex items-center justify-between gap-3 mb-3">
+                            <div className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase">
+                              {question.wasCorrect ? 'Evaluation: Correct' : 'Evaluation: Feedback'}
+                            </div>
+                            <div className={[
+                              'px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase',
+                              question.wasCorrect ? 'bg-emerald-500/30 text-emerald-300' : 'bg-rose-500/30 text-rose-300'
+                            ].join(' ')}>
+                              {question.wasCorrect ? `+${question.earned} pts` : '0 pts'}
+                            </div>
+                          </div>
+                          <p className="text-sm leading-relaxed text-slate-300 font-medium italic">
+                            "{question.explanation}"
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={continueNext}
+                          className="w-full group relative overflow-hidden rounded-2xl bg-space-aurora/20 px-4 py-4 text-sm font-black tracking-widest text-space-aurora ring-1 ring-space-aurora/40 hover:bg-space-aurora/30 transition-all active:scale-[0.98] uppercase shadow-[0_0_25px_rgba(34,197,94,0.15)]"
+                        >
+                          <span className="relative z-10">Next Challenge</span>
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

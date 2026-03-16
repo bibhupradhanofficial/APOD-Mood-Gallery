@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { format, isValid, parseISO, subDays } from 'date-fns'
 
 import { analyzeImage, fetchAPODRange, preferenceLearner } from '../services'
+import SpaceGuideAgent from './SpaceGuideAgent'
 import {
   copyToClipboard,
   downloadApodImage,
@@ -172,17 +173,17 @@ const CardSkeleton = memo(function CardSkeleton({ variant = 0 }) {
   const height = 220 + (Number(variant) % 6) * 26
   return (
     <div
-      className="mb-4 w-full overflow-hidden rounded-2xl border border-white/10 bg-space-void/40"
+      className="mb-4 w-full overflow-hidden glass-card"
       style={{ breakInside: 'avoid' }}
     >
       <div className="relative w-full animate-pulse" style={{ height }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-white/10" />
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/40 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 space-y-2">
-          <div className="h-4 w-2/3 rounded bg-white/10" />
+          <div className="h-4 w-2/3 rounded bg-white/5" />
           <div className="flex gap-2">
-            <div className="h-5 w-14 rounded-full bg-white/10" />
-            <div className="h-5 w-12 rounded-full bg-white/10" />
+            <div className="h-5 w-14 rounded-full bg-white/5" />
+            <div className="h-5 w-12 rounded-full bg-white/5" />
           </div>
         </div>
       </div>
@@ -197,7 +198,7 @@ const ApodCard = memo(function ApodCard({ item, moods, isFavorite, onToggleFavor
 
   return (
     <article
-      className="group relative mb-4 w-full overflow-hidden rounded-2xl border border-white/10 bg-space-void/40 shadow-sm shadow-black/40 transition hover:border-white/20 hover:bg-space-void/55"
+      className="group relative mb-4 w-full overflow-hidden glass-card glass-card-hover animate-in fade-in zoom-in-95 duration-500"
       style={{ breakInside: 'avoid' }}
     >
       <button type="button" className="block w-full text-left" onClick={onOpen}>
@@ -385,7 +386,7 @@ function Modal({ item, onClose, isFavorite, onToggleFavorite }) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-md"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}
@@ -396,7 +397,7 @@ function Modal({ item, onClose, isFavorite, onToggleFavorite }) {
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative max-h-full w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-space-void/65 shadow-2xl shadow-black/60 outline-none"
+        className="relative max-h-full w-full max-w-6xl overflow-hidden glass-card shadow-2xl shadow-black/80 outline-none animate-in fade-in zoom-in-95 duration-500"
       >
         <div className="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-4">
           <div className="min-w-0">
@@ -452,8 +453,8 @@ function Modal({ item, onClose, isFavorite, onToggleFavorite }) {
             <img src={hdSrc} alt={title} className="h-full w-full object-contain" />
           </div>
 
-          <div className="p-6">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="p-6 overflow-y-auto max-h-full">
+            <div className="glass-card bg-white/[0.02] p-5 mb-6">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold text-space-stardust">Share & download</h3>
                 {shareNotice ? <span className="text-xs text-slate-200/60">{shareNotice}</span> : null}
@@ -524,6 +525,8 @@ function Modal({ item, onClose, isFavorite, onToggleFavorite }) {
             <h3 className="text-sm font-semibold text-space-stardust">Description</h3>
             <p className="mt-3 text-sm leading-relaxed text-slate-200/80">{explanation || '—'}</p>
 
+            <SpaceGuideAgent apod={item} />
+
             <div className="mt-8">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold text-space-stardust">Mood breakdown</h3>
@@ -570,26 +573,26 @@ function Modal({ item, onClose, isFavorite, onToggleFavorite }) {
 
               {analysisState.status === 'ready' && analysisState.data ? (
                 <div className="mt-8 grid grid-cols-2 gap-3 text-xs text-slate-200/70">
-                  <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                    <div className="text-slate-200/60">Brightness</div>
+                  <div className="glass-card bg-white/5 p-4">
+                    <div className="text-slate-200/60 uppercase tracking-tighter font-bold text-[10px]">Brightness</div>
                     <div className="mt-2 text-sm font-semibold text-slate-100">
                       {Math.round(clamp(analysisState.data.brightness ?? 0, 0, 1) * 100)}%
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                    <div className="text-slate-200/60">Complexity</div>
+                  <div className="glass-card bg-white/5 p-4">
+                    <div className="text-slate-200/60 uppercase tracking-tighter font-bold text-[10px]">Complexity</div>
                     <div className="mt-2 text-sm font-semibold text-slate-100">
                       {Math.round(clamp(analysisState.data.complexity ?? 0, 0, 1) * 100)}%
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                    <div className="text-slate-200/60">Temperature</div>
+                  <div className="glass-card bg-white/5 p-4">
+                    <div className="text-slate-200/60 uppercase tracking-tighter font-bold text-[10px]">Temperature</div>
                     <div className="mt-2 text-sm font-semibold capitalize text-slate-100">
                       {analysisState.data.temperature ?? '—'}
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                    <div className="text-slate-200/60">Subjects</div>
+                  <div className="glass-card bg-white/5 p-4">
+                    <div className="text-slate-200/60 uppercase tracking-tighter font-bold text-[10px]">Subjects</div>
                     <div className="mt-2 text-sm font-semibold text-slate-100">
                       {Array.isArray(analysisState.data.subjects) && analysisState.data.subjects.length > 0
                         ? analysisState.data.subjects.slice(0, 3).join(', ')

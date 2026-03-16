@@ -5,4 +5,8 @@ export * from './collectionStore'
 export * from './preferenceLearner'
 export * from './storageService'
 export * from './styleAnalysis'
+export * from './geminiService'
+export * from './profileService'
+export * from './supabaseClient'
+export * from './supabaseService'
 

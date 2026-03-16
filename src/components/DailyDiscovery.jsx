@@ -11,6 +11,7 @@ import {
   queryApodsByMoodTag,
   listCollections,
 } from '../services'
+import SpaceGuideAgent from './SpaceGuideAgent'
 import { buildShareUrlWithMeta, copyToClipboard, getSocialShareLinks, getMoodConfidenceScores, MOODS } from '../utils'
 
 const DISCOVERY_KV_KEY = 'dailyDiscoveryState:v1'
@@ -284,8 +285,8 @@ function ProgressBar({ value, max, label }) {
           {Math.min(Number(value) || 0, max)}/{max}
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-white/10">
-        <div className="h-full bg-space-aurora/70" style={{ width: `${Math.round(pct * 100)}%` }} />
+      <div className="h-2 overflow-hidden rounded-full bg-slate-800/50 ring-1 ring-inset ring-white/5">
+        <div className="h-full bg-gradient-to-r from-space-aurora/40 to-space-aurora/80 shadow-[0_0_8px_rgba(34,197,94,0.3)]" style={{ width: `${Math.round(pct * 100)}%` }} />
       </div>
     </div>
   )
@@ -295,8 +296,8 @@ function BadgeCard({ title, description, progress, complete }) {
   return (
     <div
       className={[
-        'rounded-2xl border p-4 backdrop-blur',
-        complete ? 'border-emerald-400/20 bg-emerald-500/10' : 'border-white/10 bg-space-void/45',
+        'glass-card glass-card-hover p-4',
+        complete ? 'border-emerald-400/30 bg-emerald-500/10' : '',
       ].join(' ')}
     >
       <div className="flex items-start justify-between gap-3">
@@ -340,10 +341,7 @@ function PickCard({ pick, analysis, moodOfDay, challengeThreshold, onView, onCom
         if (!src) event.preventDefault()
         onView?.(pick)
       }}
-      className={[
-        'group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-space-void/40',
-        'transition hover:border-white/20 hover:bg-space-void/55',
-      ].join(' ')}
+      className="group flex flex-col overflow-hidden glass-card glass-card-hover"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/20">
         {src ? (
@@ -398,6 +396,7 @@ function PickCard({ pick, analysis, moodOfDay, challengeThreshold, onView, onCom
           ) : null}
         </div>
       </div>
+      {pick?.isExpanded && <SpaceGuideAgent apod={item} />}
     </a>
   )
 }
@@ -745,7 +744,7 @@ export default function DailyDiscovery() {
   const challengeDone = Boolean(discoveryState?.lastChallenge?.date === todayIso && discoveryState.lastChallenge.completed)
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-space-void/50 p-6 backdrop-blur">
+    <section className="glass-card p-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-space-stardust">Daily Discovery</h2>

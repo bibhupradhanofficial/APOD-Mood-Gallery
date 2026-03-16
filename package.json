@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@react-three/drei": "^10.7.4",
     "@react-three/fiber": "^9.0.0",
+    "@supabase/supabase-js": "^2.99.2",
     "@tensorflow-models/mobilenet": "^2.1.1",
     "@tensorflow/tfjs": "^4.22.0",
     "astronomy-engine": "^2.1.19",

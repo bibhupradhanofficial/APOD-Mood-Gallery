@@ -20,4 +20,42 @@
   #root {
     @apply min-h-screen;
   }
+
+  /* Phase 4: Cosmic Visual Utilities */
+  .glass-card {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] ring-1 ring-inset ring-white/5 rounded-3xl;
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-500 hover:bg-white/[0.06] hover:border-white/20 hover:shadow-[0_8px_32px_0_rgba(34,197,94,0.1)];
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(34, 197, 94, 0.2);
+  }
+
+  .cosmic-pulse {
+    animation: cosmic-pulse 8s ease-in-out infinite;
+  }
+
+  @keyframes cosmic-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.02); opacity: 1; }
+  }
+
+  .stardust-bg {
+    background-image: 
+      radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 50px 160px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 80px 120px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 110px 210px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.15;
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+  }
 }

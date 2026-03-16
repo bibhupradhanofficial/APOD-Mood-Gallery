@@ -1,4 +1,5 @@
 import { format, parseISO } from 'date-fns'
+import { getApodFromDb, saveApodToDb } from './supabaseService'
 
 const DB_NAME = 'apod-mood-gallery'
 
@@ -383,6 +384,10 @@ export async function storeApodItem(item, { analysis, fetchedAt = Date.now() } =
   }
 
   await withStore(STORE_APODS, 'readwrite', (store) => store.put(record))
+  
+  // Async background sync to Supabase if possible
+  void saveApodToDb(record).catch(() => null)
+  
   return record
 }
 
@@ -424,8 +429,20 @@ export async function storeApodItems(items, { fetchedAt = Date.now() } = {}) {
 export async function getApodItemByDate(date) {
   const key = normalizeDateString(date)
   if (!key) return null
+  
+  // Try local first for speed
   const record = await withStore(STORE_APODS, 'readonly', (store) => store.get(key))
-  return record ?? null
+  if (record) return record
+
+  // If not found local, try Supabase
+  const cloudRecord = await getApodFromDb(key)
+  if (cloudRecord) {
+    // Cache it locally
+    void withStore(STORE_APODS, 'readwrite', (store) => store.put(cloudRecord)).catch(() => null)
+    return cloudRecord
+  }
+
+  return null
 }
 
 export async function getApodItemsByDateRange(startDate, endDate) {
