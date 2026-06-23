@@ -7,6 +7,7 @@ import {
   DailyDiscovery,
   ExoplanetExplorer,
   ForYouFeed,
+  Logo,
   MoodBoardCreator,
   SpaceQuiz,
   SolarSystem,
@@ -62,7 +63,7 @@ function App() {
   useEffect(() => {
     const fallbackImage =
       typeof window !== "undefined"
-        ? new URL("/vite.svg", window.location.origin).toString()
+        ? new URL("/logo.svg", window.location.origin).toString()
         : "";
     initOpenGraphFromLocation({
       fallbackMeta: {
@@ -117,19 +118,21 @@ function App() {
   return (
     <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
       <header className="mx-auto max-w-6xl mb-8">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <p className="text-xs font-medium tracking-widest text-space-aurora/90 uppercase">
-              NASA Astronomy Pictures
-            </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-space-stardust sm:text-4xl">
-              APOD Mood Gallery
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-200/80">
-              Explore the cosmos through moods, palettes, and AI-powered
-              collections.
-            </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Logo size={60} className="flex-shrink-0" />
+            <div>
+              <p className="text-xs font-medium tracking-widest text-space-aurora/90 uppercase">
+                NASA Astronomy Pictures
+              </p>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight text-space-stardust sm:text-4xl">
+                APOD Mood Gallery
+              </h1>
+            </div>
           </div>
+          <p className="max-w-md text-sm text-slate-200/80 md:text-right">
+            Explore the cosmos through moods, palettes, and AI-powered collections.
+          </p>
         </div>
         <div>
           <nav className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 mt-8">
