@@ -98,7 +98,7 @@ function modeBadgeClass(modeId) {
 
 function moodChipClass(mood, active) {
   const key = String(mood ?? '').toLowerCase()
-  const base = 'px-3 py-2 rounded-lg text-sm font-medium ring-1 transition-colors'
+  const base = 'px-3 py-2 rounded-xl text-sm font-medium ring-1 transition-colors'
   const on = active ? 'bg-white/10 text-white ring-white/30' : 'bg-white/5 text-slate-200 ring-white/15 hover:bg-white/10'
   if (key.includes('calm')) return `${base} ${active ? 'bg-sky-500/20 text-sky-100 ring-sky-400/40' : on}`
   if (key.includes('energ')) return `${base} ${active ? 'bg-orange-500/20 text-orange-100 ring-orange-400/40' : on}`
@@ -667,31 +667,33 @@ export default function SpaceQuiz() {
   }, [perMode])
 
   return (
-    <section className="mx-auto max-w-6xl">
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 ring-1 ring-white/10">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className={['inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1', modeBadgeClass(mode)].join(' ')}>
-                Interactive Learning
-              </span>
-              <span className="text-xs text-slate-300">
-                Progress: {overallStats.correct}/{overallStats.attempts} ({formatPct(overallStats.rate)})
-              </span>
-            </div>
-            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-space-stardust">Space Quiz Lab</h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-200/80">{modeInfo.description}</p>
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className={['inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1', modeBadgeClass(mode)].join(' ')}>
+              Interactive Learning
+            </span>
+            <span className="text-xs text-slate-300">
+              Progress: {overallStats.correct}/{overallStats.attempts} ({formatPct(overallStats.rate)})
+            </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <StatPill label="Points" value={String(progress?.points ?? 0)} />
-            <StatPill label="Mode Accuracy" value={formatPct(ui.modeAccuracy)} />
-            <StatPill label="Learned Topics" value={String(ui.learnedCount)} tooltip={TOOLTIP_LIBRARY.phenomenon} />
-            <StatPill label="Color Theory" value="Tips" tooltip={TOOLTIP_LIBRARY.color} />
-            <StatPill label="Photography" value="Tips" tooltip={TOOLTIP_LIBRARY.photography} />
-          </div>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">Space Quiz Lab</h2>
+          <p className="mt-2 text-sm text-slate-300">{modeInfo.description}</p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <StatPill label="Points" value={String(progress?.points ?? 0)} />
+          <StatPill label="Mode Accuracy" value={formatPct(ui.modeAccuracy)} />
+          <StatPill label="Learned Topics" value={String(ui.learnedCount)} tooltip={TOOLTIP_LIBRARY.phenomenon} />
+          <StatPill label="Color Theory" value="Tips" tooltip={TOOLTIP_LIBRARY.color} />
+          <StatPill label="Photography" value="Tips" tooltip={TOOLTIP_LIBRARY.photography} />
+        </div>
+      </div>
 
-        <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      {/* Main Content Card */}
+      <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-2">
             {MODES.map((m) => (
               <button
@@ -724,7 +726,7 @@ export default function SpaceQuiz() {
             <button
               type="button"
               onClick={() => startRound({ total: round.total })}
-              className="rounded-lg bg-white/5 px-3 py-2 text-xs font-medium text-slate-200 ring-1 ring-white/10 hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
             >
               Restart
             </button>
@@ -733,19 +735,19 @@ export default function SpaceQuiz() {
 
         <div className="mt-6">
           {poolStatus.loading && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-slate-200">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6 text-sm text-slate-200">
               Loading APOD quiz pool…
             </div>
           )}
 
           {!poolStatus.loading && poolStatus.error && (
-            <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-6 text-sm text-rose-100">
+            <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-6 text-sm text-rose-100">
               {poolStatus.error}
             </div>
           )}
 
           {!poolStatus.loading && !poolStatus.error && round.done && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-xs font-medium tracking-widest text-slate-300 uppercase">Round Complete</p>
@@ -763,21 +765,21 @@ export default function SpaceQuiz() {
                       startRound({ total: round.total })
                       continueNext()
                     }}
-                    className="rounded-lg bg-space-aurora/15 px-4 py-2 text-sm font-medium text-space-aurora ring-1 ring-space-aurora/30 hover:bg-space-aurora/20"
+                    className="inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                   >
                     Play Again
                   </button>
                   <button
                     type="button"
                     onClick={onCopyShare}
-                    className="rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 ring-1 ring-white/10 hover:bg-white/10"
+                    className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
                   >
                     Copy Share Link
                   </button>
                   <button
                     type="button"
                     onClick={onNativeShare}
-                    className="rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 ring-1 ring-white/10 hover:bg-white/10"
+                    className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
                   >
                     Share
                   </button>
@@ -785,7 +787,7 @@ export default function SpaceQuiz() {
               </div>
 
               {share.copied && (
-                <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs text-emerald-100">
+                <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs text-emerald-100">
                   Share link copied to clipboard.
                 </div>
               )}
@@ -807,7 +809,7 @@ export default function SpaceQuiz() {
           )}
 
           {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'mood' && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                 <div className="w-full lg:w-2/3">
                   <div className="overflow-hidden rounded-xl border border-white/10 bg-space-night/50">
@@ -837,14 +839,14 @@ export default function SpaceQuiz() {
                   </div>
 
                   {question.state === 'revealing' && (
-                    <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+                    <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
                       Analyzing image…
                     </div>
                   )}
 
                   {question.state === 'revealed' && (
                     <div className="mt-4 space-y-3">
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-sm font-medium text-slate-100">Your guess: {question.userGuess}</div>
                           <div className={question.wasCorrect ? 'text-xs font-semibold text-emerald-200' : 'text-xs font-semibold text-rose-200'}>
@@ -863,7 +865,7 @@ export default function SpaceQuiz() {
                       </div>
 
                       {question.analysis?.dominantColors?.length ? (
-                        <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                        <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
                           <div className="flex items-center justify-between">
                             <div className="text-sm font-medium text-slate-100">Color Cues</div>
                             <Tooltip content={TOOLTIP_LIBRARY.color}>
@@ -888,7 +890,7 @@ export default function SpaceQuiz() {
                       ) : null}
 
                       {question.aiMood ? (
-                        <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                        <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
                           <div className="text-sm font-medium text-slate-100">Why the AI chose {question.aiMood}</div>
                           <ul className="mt-2 space-y-1 text-sm text-slate-200/90">
                             {buildMoodExplanation(question.analysis, question.aiMood).map((r) => (
@@ -904,7 +906,7 @@ export default function SpaceQuiz() {
                       <button
                         type="button"
                         onClick={continueNext}
-                        className="w-full rounded-lg bg-space-aurora/15 px-4 py-2 text-sm font-medium text-space-aurora ring-1 ring-space-aurora/30 hover:bg-space-aurora/20"
+                        className="w-full inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                       >
                         Next
                       </button>
@@ -916,7 +918,7 @@ export default function SpaceQuiz() {
           )}
 
           {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'phenomenon' && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                 <div className="w-full lg:w-2/3">
                   <div className="overflow-hidden rounded-xl border border-white/10 bg-space-night/50">
@@ -947,7 +949,7 @@ export default function SpaceQuiz() {
                         disabled={question.state !== 'asking'}
                         onClick={() => onSubmitPhenomenon(opt.id)}
                         className={[
-                          'rounded-lg px-4 py-2 text-sm font-medium ring-1 transition-colors text-left',
+                          'rounded-xl px-4 py-2 text-sm font-medium ring-1 transition-colors text-left',
                           question.state === 'asking'
                             ? 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/10'
                             : question.correctId === opt.id
@@ -964,7 +966,7 @@ export default function SpaceQuiz() {
 
                   {question.state === 'revealed' && (
                     <div className="mt-4 space-y-3">
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-sm font-medium text-slate-100">
                             Correct answer: {PHENOMENA.find((p) => p.id === question.correctId)?.label ?? '—'}
@@ -983,7 +985,7 @@ export default function SpaceQuiz() {
                       <button
                         type="button"
                         onClick={continueNext}
-                        className="w-full rounded-lg bg-space-aurora/15 px-4 py-2 text-sm font-medium text-space-aurora ring-1 ring-space-aurora/30 hover:bg-space-aurora/20"
+                        className="w-full inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                       >
                         Next
                       </button>
@@ -995,12 +997,12 @@ export default function SpaceQuiz() {
           )}
 
           {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'color' && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6">
               {question.state === 'loading' && (
                 <div className="text-sm text-slate-200">Preparing color challenge…</div>
               )}
               {question.state === 'error' && (
-                <div className="rounded-lg border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-100">
+                <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-100">
                   {question.error}
                 </div>
               )}
@@ -1028,7 +1030,7 @@ export default function SpaceQuiz() {
                       ))}
                     </div>
                     {question.state === 'revealed' && (
-                      <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="mt-4 rounded-2xl border border-white/5 bg-white/5 p-4">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-sm font-medium text-slate-100">
                             {question.wasCorrect ? 'Correct match' : 'Wrong match'}
@@ -1062,7 +1064,7 @@ export default function SpaceQuiz() {
                             type="button"
                             disabled={question.state !== 'asking'}
                             onClick={() => onSubmitColor(opt.date)}
-                            className={['overflow-hidden rounded-xl border border-white/10 bg-space-night/40 ring-1 transition', ring].join(' ')}
+                            className={['overflow-hidden rounded-2xl border border-white/5 bg-space-night/40 ring-1 transition', ring].join(' ')}
                           >
                             <img src={opt._src} alt={opt.title ?? 'APOD'} className="h-40 w-full object-cover md:h-52" />
                             <div className="p-3 text-left">
@@ -1079,7 +1081,7 @@ export default function SpaceQuiz() {
                         <button
                           type="button"
                           onClick={continueNext}
-                          className="w-full rounded-lg bg-space-aurora/15 px-4 py-2 text-sm font-medium text-space-aurora ring-1 ring-space-aurora/30 hover:bg-space-aurora/20"
+                          className="w-full inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                         >
                           Next
                         </button>
@@ -1092,17 +1094,17 @@ export default function SpaceQuiz() {
           )}
 
           {!poolStatus.loading && !poolStatus.error && !round.done && question?.type === 'date' && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                 <div className="w-full lg:w-2/3">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="overflow-hidden rounded-xl border border-white/10 bg-space-night/50">
+                    <div className="overflow-hidden rounded-2xl border border-white/5 bg-space-night/50">
                       <img src={question.a?._src} alt={question.a?.title ?? 'APOD A'} className="h-44 w-full object-cover md:h-60" />
                       <div className="p-3">
                         <div className="text-xs font-semibold text-slate-100">A</div>
                       </div>
                     </div>
-                    <div className="overflow-hidden rounded-xl border border-white/10 bg-space-night/50">
+                    <div className="overflow-hidden rounded-2xl border border-white/5 bg-space-night/50">
                       <img src={question.b?._src} alt={question.b?.title ?? 'APOD B'} className="h-44 w-full object-cover md:h-60" />
                       <div className="p-3">
                         <div className="text-xs font-semibold text-slate-100">B</div>
@@ -1119,7 +1121,7 @@ export default function SpaceQuiz() {
                       disabled={question.state !== 'asking'}
                       onClick={() => onSubmitDate('a')}
                       className={[
-                        'rounded-lg px-4 py-2 text-sm font-medium ring-1 transition-colors',
+                        'rounded-xl px-4 py-2 text-sm font-medium ring-1 transition-colors',
                         question.state === 'asking'
                           ? 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/10'
                           : question.older === 'a'
@@ -1136,7 +1138,7 @@ export default function SpaceQuiz() {
                       disabled={question.state !== 'asking'}
                       onClick={() => onSubmitDate('b')}
                       className={[
-                        'rounded-lg px-4 py-2 text-sm font-medium ring-1 transition-colors',
+                        'rounded-xl px-4 py-2 text-sm font-medium ring-1 transition-colors',
                         question.state === 'asking'
                           ? 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/10'
                           : question.older === 'b'
@@ -1152,10 +1154,10 @@ export default function SpaceQuiz() {
 
                   {question.state === 'revealed' && (
                     <div className="mt-4 space-y-3">
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-sm font-medium text-slate-100">
-                            {question.wasCorrect ? 'Correct ordering' : 'Not quite'}
+                            Correct ordering
                           </div>
                           <div className={question.wasCorrect ? 'text-xs font-semibold text-emerald-200' : 'text-xs font-semibold text-rose-200'}>
                             {question.wasCorrect ? `+${question.earned}` : '0 points'}
@@ -1171,7 +1173,7 @@ export default function SpaceQuiz() {
                       <button
                         type="button"
                         onClick={continueNext}
-                        className="w-full rounded-lg bg-space-aurora/15 px-4 py-2 text-sm font-medium text-space-aurora ring-1 ring-space-aurora/30 hover:bg-space-aurora/20"
+                        className="w-full inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                       >
                         Next
                       </button>

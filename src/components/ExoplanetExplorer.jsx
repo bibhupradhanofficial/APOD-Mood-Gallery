@@ -386,7 +386,6 @@ function OrbitDiagram({ systemName, planets, activeName, onSelect }) {
         const y = center + Math.sin(angle) * orbitR
         const isActive = Boolean(activeName) && p.name === activeName
         const isHovered = Boolean(hovered) && p.name === hovered
-
         const size = clampNumber(Number(p.radius) || 1, 0.6, 14)
         const dotR = clampNumber(2.2 + Math.log10(size + 1) * 2.4, 2, 8)
 
@@ -415,7 +414,7 @@ function OrbitDiagram({ systemName, planets, activeName, onSelect }) {
   const label = hovered || activeName || null
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+    <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-sm font-semibold text-space-stardust">Orbit diagram</h3>
@@ -486,7 +485,7 @@ function SizeComparison({ radiusEarths }) {
   const scaled = radius ? earthR * clampNumber(radius, 0.4, 12) : null
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+    <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-sm font-semibold text-space-stardust">Size vs Earth</h3>
@@ -529,7 +528,7 @@ function DistanceScale({ semimajorAu }) {
   const x = (value) => pad + axisW * clampNumber(value / max, 0, 1)
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+    <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-sm font-semibold text-space-stardust">Distance scale</h3>
@@ -887,11 +886,11 @@ export default function ExoplanetExplorer() {
   }, [activePlanet])
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-space-void/50 p-6 backdrop-blur">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-space-stardust">Exoplanet Explorer</h2>
-          <p className="mt-1 max-w-2xl text-sm text-slate-200/70">
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">Exoplanet Explorer</h2>
+          <p className="mt-2 text-sm text-slate-300">
             Browse confirmed planets from the NASA Exoplanet Archive, filter by discovery and habitability, and connect discoveries to APOD imagery.
           </p>
         </div>
@@ -899,13 +898,13 @@ export default function ExoplanetExplorer() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => loadExoplanets({ force: true })}
-            className="rounded-full bg-white/5 px-4 py-2 text-xs font-medium text-slate-100 ring-1 ring-white/10 hover:bg-white/10"
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
           >
             Refresh
           </button>
           <button
             onClick={resetFilters}
-            className="rounded-full bg-white/5 px-4 py-2 text-xs font-medium text-slate-100 ring-1 ring-white/10 hover:bg-white/10"
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
           >
             Reset filters
           </button>
@@ -913,14 +912,14 @@ export default function ExoplanetExplorer() {
       </div>
 
       {status.error ? (
-        <div className="mt-6 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100">
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100">
           {status.error}
         </div>
       ) : null}
 
-      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[360px_1fr]">
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex items-start justify-between gap-3">
               <h3 className="text-sm font-semibold text-space-stardust">Filters</h3>
               <div className="text-xs text-slate-200/70">
@@ -928,49 +927,49 @@ export default function ExoplanetExplorer() {
               </div>
             </div>
 
-            <div className="mt-3 space-y-3">
+            <div className="mt-4 space-y-4">
               <div>
-                <label className="text-xs font-medium text-slate-200/80">Search</label>
+                <label className="text-xs font-semibold text-slate-200/70 uppercase">Search</label>
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Planet, host star, method…"
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-space-aurora/50"
+                  className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-slate-200/80">Discovery method</label>
+                  <label className="text-xs font-semibold text-slate-200/70 uppercase">Discovery Method</label>
                   <select
                     value={method}
                     onChange={(e) => setMethod(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-space-aurora/50"
+                    className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20 cursor-pointer"
                   >
-                    <option value="any">Any</option>
+                    <option value="any" className="bg-space-void text-slate-100">Any</option>
                     {methods.map((m) => (
-                      <option key={m} value={m}>
+                      <option key={m} value={m} className="bg-space-void text-slate-100">
                         {m}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-200/80">Max distance (ly)</label>
+                  <label className="text-xs font-semibold text-slate-200/70 uppercase">Max Dist (ly)</label>
                   <input
                     type="number"
                     min={1}
                     max={50000}
                     value={maxDistanceLy}
                     onChange={(e) => setMaxDistanceLy(clampNumber(e.target.value, 1, 50000))}
-                    className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-space-aurora/50"
+                    className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between gap-3">
-                  <label className="text-xs font-medium text-slate-200/80">Min habitability score</label>
+                  <label className="text-xs font-semibold text-slate-200/70 uppercase">Min Habitability</label>
                   <span className="text-xs text-slate-200/70 tabular-nums">{Math.round(minHabitability)}</span>
                 </div>
                 <input
@@ -979,51 +978,51 @@ export default function ExoplanetExplorer() {
                   max={100}
                   value={minHabitability}
                   onChange={(e) => setMinHabitability(clampNumber(e.target.value, 0, 100))}
-                  className="mt-1 w-full accent-space-aurora"
+                  className="mt-2 w-full accent-space-aurora"
                 />
               </div>
 
               {yearRange.min !== null && yearRange.max !== null ? (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-medium text-slate-200/80">From year</label>
+                    <label className="text-xs font-semibold text-slate-200/70 uppercase">From Year</label>
                     <input
                       type="number"
                       min={yearRange.min}
                       max={yearRange.max}
                       value={yearFilter.min ?? yearRange.min}
                       onChange={(e) => setYearFilter((prev) => ({ ...prev, min: clampNumber(e.target.value, yearRange.min, yearRange.max) }))}
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-space-aurora/50"
+                      className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-slate-200/80">To year</label>
+                    <label className="text-xs font-semibold text-slate-200/70 uppercase">To Year</label>
                     <input
                       type="number"
                       min={yearRange.min}
                       max={yearRange.max}
                       value={yearFilter.max ?? yearRange.max}
                       onChange={(e) => setYearFilter((prev) => ({ ...prev, max: clampNumber(e.target.value, yearRange.min, yearRange.max) }))}
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-space-aurora/50"
+                      className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                     />
                   </div>
                 </div>
               ) : null}
 
               <div>
-                <label className="text-xs font-medium text-slate-200/80">Loaded rows</label>
-                <div className="mt-1 flex items-center gap-2">
+                <label className="text-xs font-semibold text-slate-200/70 uppercase">Loaded Rows</label>
+                <div className="mt-2 flex items-center gap-2">
                   <input
                     type="number"
                     min={50}
                     max={5000}
                     value={limit}
                     onChange={(e) => setLimit(clampNumber(e.target.value, 50, 5000))}
-                    className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-space-aurora/50"
+                    className="h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                   <button
                     onClick={() => loadExoplanets({ force: true })}
-                    className="shrink-0 rounded-xl bg-space-aurora/15 px-3 py-2 text-xs font-semibold text-space-stardust ring-1 ring-space-aurora/30 hover:bg-space-aurora/20"
+                    className="shrink-0 inline-flex h-10 items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                   >
                     Load
                   </button>
@@ -1032,12 +1031,12 @@ export default function ExoplanetExplorer() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5">
+          <div className="rounded-2xl border border-white/5 bg-white/5">
             <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
               <h3 className="text-sm font-semibold text-space-stardust">Results</h3>
-              <span className="text-xs text-slate-200/70">{filtered.length}</span>
+              <span className="text-xs text-slate-200/70 font-semibold tabular-nums">{filtered.length}</span>
             </div>
-            <div className="max-h-[520px] overflow-y-auto p-2">
+            <div className="max-h-[520px] overflow-y-auto p-2 space-y-1">
               {filtered.length === 0 ? (
                 <div className="p-4 text-sm text-slate-200/70">No matches. Try lowering the habitability threshold.</div>
               ) : (
@@ -1054,8 +1053,8 @@ export default function ExoplanetExplorer() {
                       key={name ?? `${host}-${year}-${Math.random()}`}
                       onClick={() => setActivePlanetName(name)}
                       className={[
-                        'w-full rounded-2xl px-3 py-3 text-left ring-1 transition-colors',
-                        active ? 'bg-space-aurora/10 ring-space-aurora/30' : 'bg-white/0 ring-white/10 hover:bg-white/5',
+                        'w-full rounded-xl px-3 py-3 text-left transition-all duration-200 border border-transparent',
+                        active ? 'bg-space-aurora/15 border-space-aurora/30' : 'bg-transparent hover:bg-white/5',
                       ].join(' ')}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -1068,7 +1067,7 @@ export default function ExoplanetExplorer() {
                           </div>
                         </div>
                         <div className="shrink-0 text-right">
-                          <div className="text-xs font-semibold text-space-stardust tabular-nums">{Math.round(score)}</div>
+                          <div className="text-xs font-bold text-space-stardust tabular-nums">{Math.round(score)}</div>
                           <div className="mt-1 text-[11px] text-slate-200/60">{distLy ? `${Math.round(distLy)} ly` : '—'}</div>
                         </div>
                       </div>
@@ -1080,16 +1079,16 @@ export default function ExoplanetExplorer() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {details ? (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="truncate text-lg font-semibold text-space-stardust">{details.name ?? 'Planet'}</h3>
                     <HabitabilityBadge score={details.habitabilityScore} />
                   </div>
-                  <div className="mt-1 text-sm text-slate-200/70">
+                  <div className="mt-1.5 text-sm text-slate-300">
                     {details.host ? `Host: ${details.host}` : 'Host unknown'}
                     {details.discoveryYear ? ` · Discovered: ${details.discoveryYear}` : ''}
                     {details.discoveryMethod ? ` · ${details.discoveryMethod}` : ''}
@@ -1110,42 +1109,42 @@ export default function ExoplanetExplorer() {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Orbital period</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Orbital period</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">
                     {formatMaybe(details.orbitalPeriodDays, 'days', 1)}
                   </div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Distance from star</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Distance from star</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">{formatMaybe(details.semimajorAu, 'AU', 3)}</div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Radius</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Radius</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">{formatMaybe(details.radiusEarths, 'R⊕', 2)}</div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Mass</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Mass</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">{formatMaybe(details.massEarths, 'M⊕', 2)}</div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Equilibrium temp</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Equilibrium temp</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">{formatMaybe(details.eqTempK, 'K', 0)}</div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Density</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Density</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">
                     {details.density ? `${details.density} g/cc` : '—'}
                   </div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Surface gravity</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Surface gravity</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">
                     {details.gravity ? `${details.gravity} g⊕` : '—'}
                   </div>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-[11px] text-slate-200/60">Habitable zone</div>
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[11px] font-semibold tracking-wider text-slate-200/60 uppercase">Habitable zone</div>
                   <div className="mt-2 text-sm font-semibold text-slate-100">
                     {details.hz?.inner && details.hz?.outer ? `${round(details.hz.inner, 2)}–${round(details.hz.outer, 2)} AU` : '—'}
                   </div>
@@ -1153,13 +1152,13 @@ export default function ExoplanetExplorer() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-200/70">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-6 text-sm text-slate-200/70">
               Select an exoplanet to see details.
             </div>
           )}
 
           {activePlanet ? (
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
               <OrbitDiagram
                 systemName={safeText(activePlanet?.hostname)}
                 planets={systemPlanets}
@@ -1171,7 +1170,7 @@ export default function ExoplanetExplorer() {
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-sm font-semibold text-space-stardust">Related APOD images</h3>
@@ -1188,7 +1187,7 @@ export default function ExoplanetExplorer() {
               </div>
             ) : null}
 
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedApods.length === 0 && !apodStatus.loading ? (
                 <div className="col-span-full text-sm text-slate-200/70">No relevant APOD matches found for this planet yet.</div>
               ) : null}
@@ -1204,7 +1203,7 @@ export default function ExoplanetExplorer() {
                     href={src}
                     target="_blank"
                     rel="noreferrer"
-                    className="group overflow-hidden rounded-2xl border border-white/10 bg-black/20 hover:bg-white/5"
+                    className="group overflow-hidden rounded-xl border border-white/5 bg-black/25 hover:border-white/10 transition duration-200"
                   >
                     <div className="aspect-[4/3] overflow-hidden bg-black/30">
                       <img src={src} alt={title} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />

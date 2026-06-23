@@ -364,8 +364,10 @@ function SpeedButton({ active, onClick, children }) {
       type="button"
       onClick={onClick}
       className={[
-        'rounded-full px-3 py-1 text-xs ring-1 transition',
-        active ? 'bg-space-aurora/20 text-space-aurora ring-space-aurora/40' : 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/10',
+        'inline-flex h-8 items-center justify-center rounded-xl px-3 py-1 text-xs font-semibold transition duration-200 border',
+        active
+          ? 'bg-space-aurora/20 text-space-aurora border-space-aurora/55 ring-1 ring-space-aurora/35'
+          : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white',
       ].join(' ')}
     >
       {children}
@@ -529,23 +531,27 @@ export default function SolarSystem() {
   }, [])
 
   return (
-    <section className="mx-auto mt-10 w-full max-w-6xl">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-space-stardust">Interactive Solar System</h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-200/75">
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">Solar System Explorer</h2>
+          <p className="mt-2 text-sm text-slate-300">
             Explore real-time planet positions, adjust scale, and fast-forward through orbital motion.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-200/70">
-          <span className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10">{format(displayDate, 'MMM d, yyyy • HH:mm')}</span>
-          <span className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10">{liveMode ? 'Live' : 'Simulated'}</span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-slate-200">
+            {format(displayDate, 'MMM d, yyyy • HH:mm')}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-slate-200">
+            {liveMode ? 'Live' : 'Simulated'}
+          </span>
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
-        <div className="overflow-hidden rounded-3xl border border-white/10 bg-space-void/40">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <div className="rounded-3xl border border-white/10 bg-space-void/45 backdrop-blur-md shadow-xl shadow-black/40 overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
@@ -553,7 +559,7 @@ export default function SolarSystem() {
                   setLiveMode((prev) => !prev)
                   if (liveMode) setTimeScaleDaysPerSecond(0)
                 }}
-                className="rounded-full bg-white/5 px-3 py-1.5 text-xs text-slate-100 ring-1 ring-white/10 hover:bg-white/10"
+                className="inline-flex h-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
               >
                 {liveMode ? 'Pause Live' : 'Resume Live'}
               </button>
@@ -563,7 +569,7 @@ export default function SolarSystem() {
                   setLiveMode(false)
                   setDisplayDate(new Date())
                 }}
-                className="rounded-full bg-white/5 px-3 py-1.5 text-xs text-slate-100 ring-1 ring-white/10 hover:bg-white/10"
+                className="inline-flex h-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
               >
                 Reset to Now
               </button>
@@ -625,53 +631,53 @@ export default function SolarSystem() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="rounded-3xl border border-white/10 bg-space-void/40 p-5">
-            <div className="flex items-start justify-between gap-3">
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+            <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-4 mb-4">
               <div className="min-w-0">
-                <h3 className="text-base font-semibold text-space-stardust">{selectedPlanet?.name ?? 'Planet'}</h3>
-                <p className="mt-1 text-sm text-slate-200/75">{selectedPlanet?.summary ?? '—'}</p>
+                <h3 className="text-lg font-semibold text-space-stardust">{selectedPlanet?.name ?? 'Planet'}</h3>
+                <p className="mt-1 text-xs text-slate-300">{selectedPlanet?.summary ?? '—'}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedPlanetId('earth')}
-                className="shrink-0 rounded-full bg-white/5 px-3 py-1 text-xs text-slate-100 ring-1 ring-white/10 hover:bg-white/10"
+                className="shrink-0 inline-flex h-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
               >
                 Focus Earth
               </button>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                <div className="text-xs text-slate-200/60">Separation from Sun</div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase">Separation from Sun</div>
                 <div className="mt-2 text-sm font-semibold text-slate-100">
                   {elongation == null ? '—' : `${elongation.toFixed(1)}°`}
                 </div>
-                <div className="mt-1 text-xs text-slate-200/60">
-                  {lonDelta == null ? '—' : lonDelta > 0 ? 'Evening sky (east of Sun)' : 'Morning sky (west of Sun)'}
+                <div className="mt-1 text-[10px] text-slate-200/60 font-medium">
+                  {lonDelta == null ? '—' : lonDelta > 0 ? 'Evening sky (east)' : 'Morning sky (west)'}
                 </div>
               </div>
-              <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                <div className="text-xs text-slate-200/60">Distance from Earth</div>
+              <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase">Distance from Earth</div>
                 <div className="mt-2 text-sm font-semibold text-slate-100">
                   {earthDistance == null ? '—' : `${earthDistance.toFixed(2)} AU`}
                 </div>
-                <div className="mt-1 text-xs text-slate-200/60">
-                  {planetLon == null ? '—' : `Ecliptic lon: ${planetLon.toFixed(1)}°`}
+                <div className="mt-1 text-[10px] text-slate-200/60 font-medium">
+                  {planetLon == null ? '—' : `Ecliptic: ${planetLon.toFixed(1)}°`}
                 </div>
               </div>
             </div>
 
-            <div className="mt-5 space-y-2">
+            <div className="mt-5 space-y-2.5">
               {Object.entries(selectedFacts).map(([label, value]) => (
                 <InfoRow key={label} label={label} value={value} />
               ))}
             </div>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mt-6 rounded-2xl border border-white/5 bg-black/20 p-4">
               <div className="flex items-center justify-between gap-3">
-                <h4 className="text-sm font-semibold text-space-stardust">Moon phase</h4>
-                <div className="text-xs text-slate-200/70">{moonPhase?.label ?? '—'}</div>
+                <h4 className="text-xs font-semibold text-space-stardust uppercase tracking-wider">Moon phase</h4>
+                <div className="text-xs text-slate-200/70 font-semibold">{moonPhase?.label ?? '—'}</div>
               </div>
               <div className="mt-3 flex items-center gap-3">
                 <MoonPhaseIcon phaseDegrees={moonPhaseDegrees} />
@@ -679,21 +685,21 @@ export default function SolarSystem() {
                   {moonPhaseDegrees.toFixed(1)}° phase angle • {Math.round(0.5 * (1 - Math.cos((moonPhaseDegrees * Math.PI) / 180)) * 100)}% illuminated
                 </div>
               </div>
-              <div className="mt-3 text-xs text-slate-200/60">{moon?.summary ?? ''}</div>
+              <div className="mt-3 text-xs text-slate-300 leading-relaxed">{moon?.summary ?? ''}</div>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-space-void/40 p-5">
-            <h3 className="text-sm font-semibold text-space-stardust">Scale</h3>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+          <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+            <h3 className="text-sm font-semibold text-space-stardust mb-4">Scale</h3>
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => setScaleMode('viewable')}
                 className={[
-                  'rounded-full px-3 py-1.5 text-xs ring-1 transition',
+                  'inline-flex h-8 items-center justify-center rounded-xl px-3 py-1.5 text-xs font-semibold transition duration-200 border',
                   scaleMode === 'viewable'
-                    ? 'bg-space-aurora/20 text-space-aurora ring-space-aurora/40'
-                    : 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/10',
+                    ? 'bg-space-aurora/20 text-space-aurora border-space-aurora/50 ring-1 ring-space-aurora/35'
+                    : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white',
                 ].join(' ')}
               >
                 Viewable
@@ -702,18 +708,18 @@ export default function SolarSystem() {
                 type="button"
                 onClick={() => setScaleMode('realistic')}
                 className={[
-                  'rounded-full px-3 py-1.5 text-xs ring-1 transition',
+                  'inline-flex h-8 items-center justify-center rounded-xl px-3 py-1.5 text-xs font-semibold transition duration-200 border',
                   scaleMode === 'realistic'
-                    ? 'bg-space-aurora/20 text-space-aurora ring-space-aurora/40'
-                    : 'bg-white/5 text-slate-100 ring-white/10 hover:bg-white/10',
+                    ? 'bg-space-aurora/20 text-space-aurora border-space-aurora/50 ring-1 ring-space-aurora/35'
+                    : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white',
                 ].join(' ')}
               >
                 Realistic-ish
               </button>
             </div>
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-4">
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-200/70">
+                <div className="flex items-center justify-between text-xs text-slate-200/70 font-semibold uppercase tracking-wider">
                   <span>Distance</span>
                   <span>{distanceBoost.toFixed(2)}×</span>
                 </div>
@@ -724,11 +730,11 @@ export default function SolarSystem() {
                   step="0.01"
                   value={distanceBoost}
                   onChange={(e) => setDistanceBoost(Number(e.target.value))}
-                  className="mt-2 w-full"
+                  className="mt-2 w-full accent-space-aurora"
                 />
               </div>
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-200/70">
+                <div className="flex items-center justify-between text-xs text-slate-200/70 font-semibold uppercase tracking-wider">
                   <span>Planet size</span>
                   <span>{sizeBoost.toFixed(2)}×</span>
                 </div>
@@ -739,70 +745,70 @@ export default function SolarSystem() {
                   step="0.01"
                   value={sizeBoost}
                   onChange={(e) => setSizeBoost(Number(e.target.value))}
-                  className="mt-2 w-full"
+                  className="mt-2 w-full accent-space-aurora"
                 />
               </div>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-space-void/40 p-5">
-            <h3 className="text-sm font-semibold text-space-stardust">Upcoming astronomy</h3>
+          <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+            <h3 className="text-sm font-semibold text-space-stardust mb-4">Upcoming astronomy</h3>
             {eventsState.status !== 'ready' ? (
-              <div className="mt-3 text-xs text-slate-200/60">Calculating…</div>
+              <div className="text-xs text-slate-200/60 animate-pulse">Calculating…</div>
             ) : (
-              <div className="mt-4 space-y-4">
+              <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                    <div className="text-xs text-slate-200/60">Next lunar eclipse</div>
+                  <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                    <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase">Next lunar eclipse</div>
                     <div className="mt-2 text-sm font-semibold text-slate-100">
                       {formatMaybeDate(eventsState.data?.nextLunar?.time)}
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                    <div className="text-xs text-slate-200/60">Next solar eclipse</div>
+                  <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                    <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase">Next solar eclipse</div>
                     <div className="mt-2 text-sm font-semibold text-slate-100">
                       {formatMaybeDate(eventsState.data?.nextSolar?.time)}
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-xs font-medium text-slate-100">Moon phases</div>
-                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-200/70">
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase mb-2">Moon phases</div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-200/70">
                     {(eventsState.data?.moonPhases ?? []).map((p) => (
                       <div key={p.label} className="flex items-center justify-between gap-2">
-                        <span className="text-slate-200/60">{p.label}</span>
-                        <span>{formatMaybeDate(p.time)}</span>
+                        <span className="text-slate-200/60 font-semibold">{p.label}</span>
+                        <span className="font-semibold text-slate-200">{formatMaybeDate(p.time)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-xs font-medium text-slate-100">Meteor showers</div>
-                  <div className="mt-2 space-y-2 text-xs text-slate-200/70">
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase mb-2">Meteor showers</div>
+                  <div className="space-y-1.5 text-xs text-slate-200/70">
                     {(eventsState.data?.showers ?? []).map((s) => (
                       <div key={s.id} className="flex items-center justify-between gap-2">
-                        <span className="text-slate-200/60">{s.name}</span>
-                        <span>{formatMaybeDate(s.time)}</span>
+                        <span className="text-slate-200/60 font-semibold">{s.name}</span>
+                        <span className="font-semibold text-slate-200">{formatMaybeDate(s.time)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-xs font-medium text-slate-100">Oppositions & conjunctions</div>
-                  <div className="mt-2 space-y-2 text-xs text-slate-200/70">
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase mb-2">Oppositions & conjunctions</div>
+                  <div className="space-y-2 text-xs text-slate-200/70">
                     {(eventsState.data?.planetEvents ?? []).slice(0, 6).map((entry) => (
                       <div key={entry.id} className="grid grid-cols-[1fr_1fr] gap-2">
-                        <div className="text-slate-200/60">{entry.name}</div>
-                        <div className="text-right">
+                        <div className="text-slate-200/60 font-semibold">{entry.name}</div>
+                        <div className="text-right font-semibold text-slate-200">
                           {'opposition' in entry
                             ? `Opp: ${formatMaybeDate(entry.opposition)}`
                             : `Sup: ${formatMaybeDate(entry.superior)}`}
                         </div>
                         <div />
-                        <div className="text-right text-slate-200/60">
+                        <div className="text-right text-slate-200/60 font-semibold">
                           {'conjunction' in entry
                             ? `Conj: ${formatMaybeDate(entry.conjunction)}`
                             : `Inf: ${formatMaybeDate(entry.inferior)}`}
@@ -812,13 +818,13 @@ export default function SolarSystem() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                  <div className="text-xs font-medium text-slate-100">Planetary alignment (approx.)</div>
-                  <div className="mt-2 text-xs text-slate-200/70">
+                <div className="rounded-xl border border-white/5 bg-black/25 p-4">
+                  <div className="text-[10px] font-semibold tracking-wider text-slate-200/60 uppercase mb-2">Planetary alignment (approx.)</div>
+                  <div className="text-xs text-slate-200/70">
                     {eventsState.data?.alignment?.time ? (
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-slate-200/60">{formatMaybeDate(eventsState.data.alignment.time)}</span>
-                        <span>{eventsState.data.alignment.spanDegrees.toFixed(1)}° span</span>
+                        <span className="text-slate-200/60 font-semibold">{formatMaybeDate(eventsState.data.alignment.time)}</span>
+                        <span className="font-semibold text-slate-200">{eventsState.data.alignment.spanDegrees.toFixed(1)}° span</span>
                       </div>
                     ) : (
                       <div className="text-slate-200/60">No 4-planet tight alignment found in the next year.</div>
@@ -829,30 +835,30 @@ export default function SolarSystem() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-space-void/40 p-5">
-            <h3 className="text-sm font-semibold text-space-stardust">Related APODs</h3>
-            {apodStatus === 'loading' ? <div className="mt-3 text-xs text-slate-200/60">Loading…</div> : null}
-            {apodStatus === 'error' ? <div className="mt-3 text-xs text-rose-200/70">Unable to load related APODs.</div> : null}
+          <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+            <h3 className="text-sm font-semibold text-space-stardust mb-4">Related APODs</h3>
+            {apodStatus === 'loading' ? <div className="text-xs text-slate-200/60 animate-pulse">Loading…</div> : null}
+            {apodStatus === 'error' ? <div className="text-xs text-rose-200/70">Unable to load related APODs.</div> : null}
             {apodStatus === 'ready' && relatedApods.length === 0 ? (
-              <div className="mt-3 text-xs text-slate-200/60">No related items found yet.</div>
+              <div className="text-xs text-slate-200/60">No related items found yet.</div>
             ) : null}
 
             {relatedApods.length > 0 ? (
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {relatedApods.slice(0, 6).map((item, index) => (
                   <a
                     key={item?.date ?? item?.url ?? `${selectedPlanetId}-${index}`}
                     href={item?.hdurl ?? item?.url ?? '#'}
                     target="_blank"
                     rel="noreferrer"
-                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10"
+                    className="group overflow-hidden rounded-xl border border-white/5 bg-black/25 hover:border-white/10 transition duration-200"
                     title={item?.title ?? 'APOD'}
                   >
                     <div className="relative aspect-[4/3]">
-                      <img src={item?.url ?? ''} alt={item?.title ?? 'APOD'} className="h-full w-full object-cover opacity-90 transition group-hover:opacity-100" />
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-3">
-                        <div className="line-clamp-2 text-[11px] font-medium text-slate-100">{item?.title ?? 'APOD'}</div>
-                        <div className="mt-1 text-[10px] text-slate-200/70">{item?.date ?? ''}</div>
+                      <img src={item?.url ?? ''} alt={item?.title ?? 'APOD'} className="h-full w-full object-cover opacity-90 transition duration-300 group-hover:scale-[1.03]" />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                        <div className="line-clamp-2 text-[11px] font-semibold text-slate-100">{item?.title ?? 'APOD'}</div>
+                        <div className="mt-1 text-[10px] text-slate-200/70 font-semibold">{item?.date ?? ''}</div>
                       </div>
                     </div>
                   </a>
@@ -861,9 +867,9 @@ export default function SolarSystem() {
             ) : null}
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-space-void/40 p-5">
-            <h3 className="text-sm font-semibold text-space-stardust">Learn</h3>
-            <div className="mt-3 space-y-2 text-sm text-slate-200/75">
+          <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+            <h3 className="text-sm font-semibold text-space-stardust mb-4">Learn</h3>
+            <div className="space-y-2.5 text-sm text-slate-300 leading-relaxed">
               {(selectedPlanet?.education ?? []).slice(0, 4).map((line) => (
                 <p key={line}>{line}</p>
               ))}

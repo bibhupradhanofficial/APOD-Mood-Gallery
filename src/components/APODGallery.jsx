@@ -740,12 +740,12 @@ export default function APODGallery() {
   const selectedFavorite = selected ? favorites.has(normalizeFavoriteKey(selected) ?? '') : false
 
   return (
-    <section className="mx-auto mt-10 w-full max-w-6xl">
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
       <WhereArePlanetsNow />
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold tracking-tight text-space-stardust">Gallery</h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-200/75">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">Gallery</h2>
+          <p className="mt-2 text-sm text-slate-300">
             Scroll to explore APOD images. Tap a card for the full-size view, description, and mood analysis.
           </p>
         </div>
@@ -760,12 +760,12 @@ export default function APODGallery() {
       </div>
 
       {status.error ? (
-        <div className="mt-6 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5 text-sm text-rose-100">
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5 text-sm text-rose-100">
           {status.error}
         </div>
       ) : null}
 
-      <div className="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
+      <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
         {cards}
         {status.loading
           ? Array.from({

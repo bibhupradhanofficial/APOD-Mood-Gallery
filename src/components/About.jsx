@@ -59,23 +59,29 @@ export default function About() {
   ];
 
   return (
-    <section className="mx-auto mt-10 w-full max-w-6xl">
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-10">
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">About APOD Mood Gallery</h2>
+          <p className="mt-2 text-sm text-slate-300">
+            Explore the cosmos through visual emotions, custom color palettes, and AI-powered collections.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
         <p className="text-xs font-medium tracking-widest text-space-aurora/90 uppercase">
-          About
+          Overview
         </p>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-space-stardust sm:text-3xl">
-          APOD Mood Gallery
-        </h2>
-        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-200/80">
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-200/80">
           APOD Mood Gallery is a creative way to explore NASA&apos;s Astronomy
           Picture of the Day (APOD). It pairs each image with mood tags and
           visual palettes so you can browse space photography by vibe, not just
           by date.
         </p>
 
-        <div className="mt-4 mb-6 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl bg-black/20 p-5 ring-1 ring-white/10">
+        <div className="mt-6 mb-6 grid gap-6 md:grid-cols-2">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-5 transition hover:border-white/10 hover:bg-white/10">
             <h3 className="text-sm font-semibold text-space-stardust">
               What You Can Do
             </h3>
@@ -91,7 +97,7 @@ export default function About() {
             </ul>
           </div>
 
-          <div className="rounded-2xl bg-black/20 p-5 ring-1 ring-white/10">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-5 transition hover:border-white/10 hover:bg-white/10">
             <h3 className="text-sm font-semibold text-space-stardust">
               Use Cases
             </h3>
@@ -109,14 +115,14 @@ export default function About() {
             </ul>
           </div>
         </div>
-        <div className="mt-4 rounded-xl bg-white/5 px-4 py-3 text-xs text-slate-200/70 ring-1 ring-white/10">
+        <div className="mt-4 rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-xs text-slate-200/70">
           <span className="text-space-aurora/80">system_info: </span>Built with React + Vite + Tailwind, powered by NASA&apos;s APOD data.
         </div>
-        {/* <div className="rounded-2xl bg-black/20 p-5 ring-1 ring-white/10"></div> */}
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-space-stardust sm:text-3xl">
+        
+        <h2 className="mt-8 text-xl font-semibold tracking-tight text-space-stardust border-t border-white/10 pt-6">
           Developer
         </h2>
-        <div className="mt-3 flex flex-col gap-6 sm:flex-row sm:items-start text-left">
+        <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-start text-left">
           <div className="flex-1 sm:text-left">
             <h3 className="text-xl font-medium text-white">Bibhu Pradhan</h3>
             <p className="mt-1 text-sm font-medium text-space-aurora/80">Full-Stack Developer & Creative Coder</p>
@@ -126,7 +132,7 @@ export default function About() {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-center gap-3">
+        <div className="mt-6 flex items-center justify-center gap-3">
           {socialLinks.map((item) => (
             <a
               key={item.label}

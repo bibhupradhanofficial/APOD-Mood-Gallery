@@ -42,10 +42,7 @@ const MiniCard = memo(function MiniCard({ item, score }) {
       href={item?.hdurl || item?.url || '#'}
       target="_blank"
       rel="noreferrer"
-      className={[
-        'group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-space-void/40',
-        'transition hover:border-white/20 hover:bg-space-void/55',
-      ].join(' ')}
+      className="group flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/5 transition hover:border-white/10 hover:bg-white/10"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/20">
         {src ? (
@@ -201,22 +198,22 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
   }, [analysisBySrc, candidates])
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-space-void/50 p-6 backdrop-blur">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
         <div>
-          <h2 className="text-lg font-semibold text-space-stardust">For You</h2>
-          <p className="mt-2 text-sm text-slate-200/75">
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">For You</h2>
+          <p className="mt-2 text-sm text-slate-300">
             Personalized picks based on what you like, view, and search. Stored locally on this device.
           </p>
           {hasSignal ? (
-            <p className="mt-3 text-xs text-slate-200/65">
+            <p className="mt-2 text-xs text-slate-200/60 font-medium">
               Current leaning: {profile?.favorites?.moods?.length ? profile.favorites.moods.join(', ') : '—'}
             </p>
           ) : (
-            <p className="mt-3 text-xs text-slate-200/65">Interact with a few images to personalize this feed.</p>
+            <p className="mt-2 text-xs text-slate-200/60">Interact with a few images to personalize this feed.</p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => {
@@ -227,10 +224,7 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
               if (!ok) return
               preferenceLearner.reset()
             }}
-            className={[
-              'rounded-full border px-3 py-1 text-xs font-medium transition',
-              'border-white/10 bg-white/5 text-slate-100 hover:border-white/20 hover:bg-white/10',
-            ].join(' ')}
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
           >
             Reset
           </button>
@@ -238,17 +232,19 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
       </div>
 
       {status.error ? (
-        <div className="mt-5 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100">
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100">
           {status.error}
         </div>
       ) : null}
 
       {status.loading && items.length === 0 ? (
-        <div className="mt-5 text-sm text-slate-200/70">Loading personalized feed…</div>
+        <div className="rounded-2xl border border-white/5 bg-white/5 p-6 text-sm text-slate-200/70">
+          Loading personalized feed…
+        </div>
       ) : null}
 
       {ranked.length > 0 ? (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {ranked.map((entry) => (
             <MiniCard
               key={preferenceLearner.normalizeItemKey(entry.item) ?? normalizeSrc(entry.item) ?? entry.item?.date}
@@ -258,7 +254,7 @@ export default function ForYouFeed({ windowDays = 60, maxCandidates = 48, maxCar
           ))}
         </div>
       ) : (
-        <div className="mt-6 text-sm text-slate-200/70">
+        <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40 text-center text-sm text-slate-200/70">
           {items.length === 0
             ? 'No recent images found.'
             : candidates.length === 0

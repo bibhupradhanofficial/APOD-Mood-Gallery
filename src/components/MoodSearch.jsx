@@ -660,17 +660,11 @@ export default function MoodSearch({
   }, [cappedCandidates, matchesCurrentQuery, onSurprise, query])
 
   return (
-    <section
-      className={[
-        'mx-auto w-full max-w-5xl',
-        'rounded-3xl border border-white/20 bg-white/10 px-4 py-4 shadow-xl shadow-black/40',
-        'backdrop-blur-2xl',
-      ].join(' ')}
-    >
-      <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <section className="w-full rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+      <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between border-b border-white/10 pb-4 mb-4">
         <div>
-          <h2 className="text-lg font-semibold tracking-wide text-white">Mood Search</h2>
-          <p className="mt-1 text-sm text-slate-200/80">
+          <h2 className="text-xl font-bold tracking-tight text-space-stardust">Mood Search</h2>
+          <p className="mt-1 text-sm text-slate-300">
             Pick moods and fine-tune color, subjects, brightness, and dates.
           </p>
         </div>
@@ -679,29 +673,25 @@ export default function MoodSearch({
             type="button"
             onClick={handleSurprise}
             disabled={surpriseRunning}
-            className={[
-              'inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition',
-              'border-white/15 bg-white/10 text-white hover:border-white/25 hover:bg-white/15',
-              'disabled:cursor-not-allowed disabled:opacity-60',
-            ].join(' ')}
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Surprise me
           </button>
           <button
             type="button"
             onClick={clearAll}
-            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100/90 transition hover:border-white/20 hover:bg-white/10"
+            className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
           >
             Reset
           </button>
         </div>
       </header>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-12">
-        <div className="md:col-span-5">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+      <div className="mt-4 grid gap-6 md:grid-cols-12">
+        <div className="md:col-span-5 space-y-6">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold tracking-wide text-white">Moods</h3>
+              <h3 className="text-sm font-semibold text-white">Moods</h3>
               <div className="inline-flex overflow-hidden rounded-full border border-white/10 bg-white/5 p-0.5 text-xs">
                 <button
                   type="button"
@@ -732,27 +722,27 @@ export default function MoodSearch({
             </div>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
-            <h3 className="text-sm font-semibold tracking-wide text-white">Advanced Filters</h3>
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
+            <h3 className="text-sm font-semibold text-white">Advanced Filters</h3>
 
-            <div className="mt-3 grid gap-3">
+            <div className="mt-4 grid gap-4">
               <label className="grid gap-1">
-                <span className="text-xs font-medium text-slate-200/80">Color palette</span>
+                <span className="text-xs font-semibold text-slate-200/70 uppercase">Color palette</span>
                 <select
                   value={palette}
                   onChange={(event) => setPalette(event.target.value)}
-                  className="h-10 w-full rounded-xl border border-white/10 bg-space-void/50 px-3 text-sm text-slate-100 outline-none transition focus:border-white/25"
+                  className="mt-1 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20 cursor-pointer"
                 >
-                  <option value="any">Any</option>
-                  <option value="warm">Warm</option>
-                  <option value="cool">Cool</option>
-                  <option value="vibrant">Vibrant</option>
-                  <option value="muted">Muted</option>
+                  <option value="any" className="bg-space-void text-slate-100">Any</option>
+                  <option value="warm" className="bg-space-void text-slate-100">Warm</option>
+                  <option value="cool" className="bg-space-void text-slate-100">Cool</option>
+                  <option value="vibrant" className="bg-space-void text-slate-100">Vibrant</option>
+                  <option value="muted" className="bg-space-void text-slate-100">Muted</option>
                 </select>
               </label>
 
               <div className="grid gap-2">
-                <span className="text-xs font-medium text-slate-200/80">Subject types</span>
+                <span className="text-xs font-semibold text-slate-200/70 uppercase">Subject types</span>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {[
                     ['galaxies', 'Galaxies'],
@@ -764,7 +754,7 @@ export default function MoodSearch({
                   ].map(([key, label]) => (
                     <label
                       key={key}
-                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100/90 transition hover:border-white/20"
+                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-slate-100/90 transition hover:border-white/20"
                     >
                       <input
                         type="checkbox"
@@ -780,8 +770,8 @@ export default function MoodSearch({
 
               <div className="grid gap-1">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs font-medium text-slate-200/80">Minimum brightness</span>
-                  <span className="text-xs text-slate-100/80">{Math.round(minBrightnessPct)}%</span>
+                  <span className="text-xs font-semibold text-slate-200/70 uppercase">Minimum brightness</span>
+                  <span className="text-xs text-slate-100/80 font-bold tabular-nums">{Math.round(minBrightnessPct)}%</span>
                 </div>
                 <input
                   type="range"
@@ -790,27 +780,27 @@ export default function MoodSearch({
                   step={1}
                   value={minBrightnessPct}
                   onChange={(event) => setMinBrightnessPct(Number(event.target.value))}
-                  className="w-full accent-white"
+                  className="w-full accent-space-aurora mt-1"
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="grid gap-1">
-                  <span className="text-xs font-medium text-slate-200/80">Start date</span>
+                  <span className="text-xs font-semibold text-slate-200/70 uppercase">Start date</span>
                   <input
                     type="date"
                     value={dateStart}
                     onChange={(event) => setDateStart(event.target.value)}
-                    className="h-10 w-full rounded-xl border border-white/10 bg-space-void/50 px-3 text-sm text-slate-100 outline-none transition focus:border-white/25"
+                    className="mt-1 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                 </label>
                 <label className="grid gap-1">
-                  <span className="text-xs font-medium text-slate-200/80">End date</span>
+                  <span className="text-xs font-semibold text-slate-200/70 uppercase">End date</span>
                   <input
                     type="date"
                     value={dateEnd}
                     onChange={(event) => setDateEnd(event.target.value)}
-                    className="h-10 w-full rounded-xl border border-white/10 bg-space-void/50 px-3 text-sm text-slate-100 outline-none transition focus:border-white/25"
+                    className="mt-1 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                 </label>
               </div>
@@ -819,8 +809,8 @@ export default function MoodSearch({
         </div>
 
         <div className="md:col-span-7">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-sm font-semibold tracking-wide text-white">Results</h3>
                 <p className="mt-1 text-sm text-slate-200/80">
@@ -845,19 +835,19 @@ export default function MoodSearch({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                  <span className="text-xs font-medium text-slate-200/80">Save preset</span>
+                <div className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-3">
+                  <span className="text-xs font-semibold text-slate-200/70 uppercase">Save preset</span>
                   <input
                     value={presetName}
                     onChange={(event) => setPresetName(event.target.value)}
                     placeholder="Name"
-                    className="h-6 w-32 bg-transparent text-xs text-white outline-none placeholder:text-slate-200/50"
+                    className="h-6 w-24 bg-transparent text-xs text-white outline-none placeholder:text-slate-400/50"
                   />
                   <button
                     type="button"
                     onClick={savePreset}
                     disabled={!presetName.trim()}
-                    className="rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white transition hover:border-white/20 hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-7 items-center justify-center rounded-lg bg-space-aurora/20 px-3 text-xs font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Save
                   </button>
@@ -866,20 +856,20 @@ export default function MoodSearch({
             </div>
 
             {presets.length > 0 ? (
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {presets.map((preset) => (
                   <div
                     key={preset.id}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+                    className="flex items-center justify-between gap-2 rounded-xl border border-white/5 bg-black/20 px-3 py-2"
                   >
                     <button
                       type="button"
                       onClick={() => applyPreset(preset)}
-                      className="min-w-0 flex-1 text-left text-sm font-medium text-white/90 transition hover:text-white"
+                      className="min-w-0 flex-1 text-left text-sm font-semibold text-white/95 transition hover:text-white"
                       title={preset.name}
                     >
                       <span className="block truncate">{preset.name}</span>
-                      <span className="mt-0.5 block truncate text-xs text-slate-200/70">
+                      <span className="mt-0.5 block truncate text-xs text-slate-200/60 font-normal">
                         {Array.isArray(preset?.query?.moods) && preset.query.moods.length > 0
                           ? preset.query.moods.join(', ')
                           : 'Any mood'}
@@ -888,7 +878,7 @@ export default function MoodSearch({
                     <button
                       type="button"
                       onClick={() => deletePreset(preset.id)}
-                      className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-100/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                      className="inline-flex h-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
                     >
                       Remove
                     </button>
@@ -896,11 +886,11 @@ export default function MoodSearch({
                 ))}
               </div>
             ) : (
-              <p className="mt-3 text-xs text-slate-200/60">No presets saved yet.</p>
+              <p className="mt-4 text-xs text-slate-200/60">No presets saved yet.</p>
             )}
 
             {surpriseItem ? (
-              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-space-void/40">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-white/5 bg-black/25">
                 <div className="relative aspect-[16/10] w-full">
                   <img
                     src={surpriseItem?.url ?? ''}
@@ -910,7 +900,7 @@ export default function MoodSearch({
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="text-sm font-semibold text-white">{surpriseItem?.title ?? 'Surprise pick'}</div>
                     <div className="mt-1 text-xs text-slate-200/80">{surpriseItem?.date ?? ''}</div>
                   </div>
@@ -918,7 +908,7 @@ export default function MoodSearch({
               </div>
             ) : null}
 
-            {surpriseError ? <p className="mt-3 text-sm text-rose-200/90">{String(surpriseError?.message)}</p> : null}
+            {surpriseError ? <p className="mt-4 text-sm text-rose-200/90">{String(surpriseError?.message)}</p> : null}
           </div>
         </div>
       </div>

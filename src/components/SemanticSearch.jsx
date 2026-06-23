@@ -371,7 +371,7 @@ function parseSemanticQuery(text, { today }) {
 
 function badge(text) {
   return (
-    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-100/80">
+    <span className="inline-flex items-center justify-center rounded-xl border border-white/5 bg-black/25 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
       {text}
     </span>
   )
@@ -444,23 +444,22 @@ export default function SemanticSearch() {
   const effectiveParsed = usingDefaults ? parsed : appliedParsed
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-2xl border border-white/10 bg-space-void/40 p-5">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-space-stardust">Semantic Search</h2>
-              <p className="mt-1 text-sm text-slate-200/70">
-                Describe what you want in plain English. The app will interpret your intent into moods, colors, subjects,
-                and dates.
-              </p>
-            </div>
-          </div>
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">Semantic Search</h2>
+          <p className="mt-2 text-sm text-slate-300">
+            Describe what you want in plain English. The app will interpret your intent into moods, colors, subjects, and dates.
+          </p>
+        </div>
+      </div>
 
+      <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+        <div className="flex flex-col gap-6">
           <div className="relative">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
-                <label className="text-xs font-medium text-slate-200/75">Natural language query</label>
+                <label className="text-xs font-semibold text-slate-200/70 uppercase">Natural language query</label>
                 <input
                   value={input}
                   onChange={(e) => {
@@ -468,14 +467,14 @@ export default function SemanticSearch() {
                   }}
                   onKeyDown={onKeyDown}
                   placeholder="e.g. Show me calming purple nebulae"
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-400/70 outline-none focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
+                  className="mt-2 h-12 w-full rounded-xl border border-white/10 bg-black/25 px-4 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                 />
               </div>
               <div className="flex items-end gap-2">
                 <button
                   type="button"
                   onClick={applyQuery}
-                  className="inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-3 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25"
+                  className="inline-flex h-12 items-center justify-center rounded-xl bg-space-aurora/20 px-6 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200"
                 >
                   Apply
                 </button>
@@ -485,7 +484,7 @@ export default function SemanticSearch() {
                     setInput('')
                     setAppliedText('')
                   }}
-                  className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-100/80 hover:bg-white/10"
+                  className="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
                 >
                   Clear
                 </button>
@@ -493,16 +492,16 @@ export default function SemanticSearch() {
             </div>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold text-space-stardust">Interpreted Parameters</h3>
-                <div className="text-[11px] text-slate-200/60">
+                <div className="text-[11px] text-slate-200/60 font-medium">
                   {usingDefaults ? 'Live preview' : `Applied: ${appliedText || '—'}`}
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {effectiveParsed.moods.length ? badge(`Mood: ${effectiveParsed.moods.join(', ')}`) : badge('Mood: —')}
                 {effectiveParsed.palette !== 'any' ? badge(`Palette: ${effectiveParsed.palette}`) : badge('Palette: —')}
                 {effectiveParsed.colors.length ? badge(`Colors: ${effectiveParsed.colors.join(', ')}`) : badge('Colors: —')}
@@ -527,22 +526,22 @@ export default function SemanticSearch() {
               </div>
 
               {effectiveParsed.keywords.length ? (
-                <div className="mt-3 text-[11px] text-slate-200/60">
+                <div className="mt-4 text-[11px] text-slate-200/60 font-medium">
                   Keywords: <span className="text-slate-100/75">{effectiveParsed.keywords.join(', ')}</span>
                 </div>
               ) : null}
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
               <h3 className="text-sm font-semibold text-space-stardust">Examples</h3>
               <p className="mt-1 text-xs text-slate-200/65">Click to run a search.</p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {EXAMPLE_QUERIES.map((q) => (
                   <button
                     key={q}
                     type="button"
                     onClick={() => applyExample(q)}
-                    className="rounded-full border border-white/10 bg-black/15 px-3 py-1 text-[11px] text-slate-100/75 hover:bg-white/10"
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-[11px] font-medium text-slate-200/80 hover:bg-white/10 hover:text-white transition duration-200"
                   >
                     {q}
                   </button>

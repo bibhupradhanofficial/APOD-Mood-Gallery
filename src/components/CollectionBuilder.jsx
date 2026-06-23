@@ -693,11 +693,11 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
   }, [activeRecord])
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-space-void/50 p-6 backdrop-blur">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <section className="mx-auto mt-8 w-full max-w-6xl space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-white/10 pb-6">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-space-stardust">Collection Builder</h2>
-          <p className="mt-1 text-sm text-slate-200/70">
+          <h2 className="text-2xl font-bold tracking-tight text-space-stardust sm:text-3xl">Collection Builder</h2>
+          <p className="mt-2 text-sm text-slate-300">
             Curate themed mood boards and let similarity scoring suggest cohesive additions.
           </p>
         </div>
@@ -705,7 +705,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
           <button
             type="button"
             onClick={clearCollection}
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10"
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
           >
             New collection
           </button>
@@ -713,7 +713,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
             type="button"
             onClick={saveAndCreateShareLink}
             disabled={collectionItems.length === 0}
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center justify-center rounded-xl bg-space-aurora/20 px-4 py-2 text-sm font-semibold text-space-aurora ring-1 ring-space-aurora/50 hover:bg-space-aurora/25 transition duration-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Save + copy link
           </button>
@@ -721,7 +721,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
             type="button"
             onClick={exportJson}
             disabled={collectionItems.length === 0}
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Export JSON
           </button>
@@ -729,92 +729,93 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
             type="button"
             onClick={exportPdf}
             disabled={collectionItems.length === 0 || isExportingPdf}
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isExportingPdf ? 'Generating PDF...' : 'Export PDF'}
           </button>
         </div>
       </div>
 
-      {collectionNotice ? <p className="mt-3 text-sm text-slate-200/70">{collectionNotice}</p> : null}
+      {collectionNotice ? <p className="text-sm text-slate-200/75">{collectionNotice}</p> : null}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex-1">
-                <label className="text-xs font-medium tracking-widest text-slate-200/70">COLLECTION NAME</label>
-                <input
-                  value={collectionName}
-                  onChange={(event) => {
-                    setCollectionName(event.target.value)
-                    setNameMode('manual')
-                  }}
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-sm text-slate-100 outline-none focus:border-white/25"
-                  placeholder="Untitled Collection"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setNameMode((prev) => (prev === 'auto' ? 'manual' : 'auto'))}
-                  className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10"
-                >
-                  {nameMode === 'auto' ? 'Auto naming: On' : 'Auto naming: Off'}
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label className="text-xs font-medium tracking-widest text-slate-200/70">THEME</label>
-              <input
-                value={theme}
-                onChange={(event) => setTheme(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-sm text-slate-100 outline-none focus:border-white/25"
-                placeholder="Cosmic Calm"
-              />
-            </div>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="text-xs font-medium tracking-widest text-slate-200/70">SAVED ID</label>
-                <div className="mt-2 rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-sm text-slate-100">
-                  {collectionId ?? 'Not saved yet'}
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-medium tracking-widest text-slate-200/70">LOAD BY ID</label>
-                <div className="mt-2 flex gap-2">
+      <div className="rounded-3xl border border-white/10 bg-space-void/45 p-6 sm:p-8 backdrop-blur-md shadow-xl shadow-black/40">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex-1">
+                  <label className="text-xs font-semibold tracking-wider text-slate-200/70 uppercase">Collection Name</label>
                   <input
-                    value={loadId}
-                    onChange={(event) => setLoadId(event.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-sm text-slate-100 outline-none focus:border-white/25"
-                    placeholder="Paste collection id"
+                    value={collectionName}
+                    onChange={(event) => {
+                      setCollectionName(event.target.value)
+                      setNameMode('manual')
+                    }}
+                    className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
+                    placeholder="Untitled Collection"
                   />
+                </div>
+                <div className="flex items-end self-end sm:self-center h-10 mt-2 sm:mt-0">
                   <button
                     type="button"
-                    onClick={loadStoredCollection}
-                    className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10"
+                    onClick={() => setNameMode((prev) => (prev === 'auto' ? 'manual' : 'auto'))}
+                    className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-white/10"
                   >
-                    Load
+                    {nameMode === 'auto' ? 'Auto naming: On' : 'Auto naming: Off'}
                   </button>
                 </div>
               </div>
-            </div>
+
+              <div className="mt-4">
+                <label className="text-xs font-semibold tracking-wider text-slate-200/70 uppercase">Theme</label>
+                <input
+                  value={theme}
+                  onChange={(event) => setTheme(event.target.value)}
+                  className="mt-2 h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
+                  placeholder="Cosmic Calm"
+                />
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-semibold tracking-wider text-slate-200/70 uppercase">Saved ID</label>
+                  <div className="mt-2 flex h-10 items-center rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100/70">
+                    {collectionId ?? 'Not saved yet'}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold tracking-wider text-slate-200/70 uppercase">Load by ID</label>
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      value={loadId}
+                      onChange={(event) => setLoadId(event.target.value)}
+                      className="h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
+                      placeholder="Paste collection id"
+                    />
+                    <button
+                      type="button"
+                      onClick={loadStoredCollection}
+                      className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10"
+                    >
+                      Load
+                    </button>
+                  </div>
+                </div>
+              </div>
 
             {shareUrl ? (
               <div className="mt-4">
-                <label className="text-xs font-medium tracking-widest text-slate-200/70">SHARE LINK</label>
+                <label className="text-xs font-semibold tracking-wider text-slate-200/70 uppercase">Share Link</label>
                 <div className="mt-2 flex gap-2">
                   <input
                     readOnly
                     value={shareUrl}
-                    className="w-full rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-sm text-slate-100/90 outline-none"
+                    className="h-10 w-full rounded-xl border border-white/10 bg-black/25 px-3 text-sm text-slate-100 placeholder:text-slate-400/50 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                   <button
                     type="button"
                     onClick={() => copyToClipboard(shareUrl)}
-                    className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10"
+                    className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
                   >
                     Copy
                   </button>
@@ -823,27 +824,27 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                   <button
                     type="button"
                     onClick={copyEmbed}
-                    className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10"
+                    className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
                   >
                     Copy embed
                   </button>
-                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-space-void/40 px-3 py-2">
-                    <span className="text-xs text-slate-200/70">ZIP</span>
+                  <div className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-3">
+                    <span className="text-xs font-semibold text-slate-200/70 uppercase">ZIP</span>
                     <select
                       value={zipVariant}
                       onChange={(event) => setZipVariant(event.target.value)}
-                      className="bg-transparent text-xs text-slate-100 outline-none"
+                      className="bg-transparent text-xs text-slate-100 outline-none cursor-pointer"
                     >
-                      <option value="original">Original</option>
-                      <option value="hd">HD</option>
-                      <option value="thumbnail">Thumbnail</option>
+                      <option value="original" className="bg-space-void text-slate-100">Original</option>
+                      <option value="hd" className="bg-space-void text-slate-100">HD</option>
+                      <option value="thumbnail" className="bg-space-void text-slate-100">Thumbnail</option>
                     </select>
                   </div>
                   <button
                     type="button"
                     onClick={exportZip}
                     disabled={collectionItems.length === 0 || isExportingZip}
-                    className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {isExportingZip ? 'Exporting ZIP…' : 'Export ZIP'}
                   </button>
@@ -854,7 +855,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                       href={shareLinks.twitter}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex-1 text-center py-2 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                      className="flex-1 text-center py-2 text-xs rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
                     >
                       Twitter
                     </a>
@@ -862,7 +863,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                       href={shareLinks.pinterest}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex-1 text-center py-2 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                      className="flex-1 text-center py-2 text-xs rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
                     >
                       Pinterest
                     </a>
@@ -870,7 +871,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                       href={shareLinks.reddit}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex-1 text-center py-2 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                      className="flex-1 text-center py-2 text-xs rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
                     >
                       Reddit
                     </a>
@@ -891,7 +892,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
               <button
                 type="button"
                 onClick={() => setShowColorStory((prev) => !prev)}
-                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10"
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition duration-200"
               >
                 {showColorStory ? 'Hide color story' : 'Show color story'}
               </button>
@@ -899,7 +900,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
           </div>
 
           {showColorStory ? (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
               <div className="flex items-center justify-between gap-4">
                 <h3 className="text-sm font-semibold text-space-stardust">Color story</h3>
                 <p className="text-xs text-slate-200/60">Dominant swatches in sequence</p>
@@ -927,7 +928,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex items-center justify-between gap-4">
               <h3 className="text-sm font-semibold text-space-stardust">Collection items</h3>
               <p className="text-xs text-slate-200/60">Drag to reorder</p>
@@ -1018,7 +1019,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-semibold text-space-stardust">Candidate pool</h3>
@@ -1031,7 +1032,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                     type="date"
                     value={dateStart}
                     onChange={(event) => setDateStart(event.target.value)}
-                    className="mt-1 block rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-xs text-slate-100 outline-none focus:border-white/25"
+                    className="mt-1 block h-9 rounded-xl border border-white/10 bg-black/25 px-3 text-xs text-slate-100 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                 </label>
                 <label className="text-xs text-slate-200/60">
@@ -1040,7 +1041,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                     type="date"
                     value={dateEnd}
                     onChange={(event) => setDateEnd(event.target.value)}
-                    className="mt-1 block rounded-xl border border-white/10 bg-space-void/40 px-3 py-2 text-xs text-slate-100 outline-none focus:border-white/25"
+                    className="mt-1 block h-9 rounded-xl border border-white/10 bg-black/25 px-3 text-xs text-slate-100 outline-none transition focus:border-space-aurora/40 focus:ring-2 focus:ring-space-aurora/20"
                   />
                 </label>
               </div>
@@ -1055,7 +1056,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
             )}
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex items-center justify-between gap-4">
               <h3 className="text-sm font-semibold text-space-stardust">AI suggestions</h3>
               <p className="text-xs text-slate-200/60">Visual + mood + seasonal match</p>
@@ -1087,7 +1088,7 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
             )}
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-5 transition hover:border-white/10 hover:bg-white/10">
             <div className="flex items-center justify-between gap-4">
               <h3 className="text-sm font-semibold text-space-stardust">Browse candidates</h3>
               <p className="text-xs text-slate-200/60">Recent first</p>
@@ -1111,10 +1112,12 @@ export default function CollectionBuilder({ items, maxCandidates = DEFAULT_MAX_C
                 )
               })}
             </div>
-          </div>
         </div>
       </div>
-    </section>
-  )
+    </div>
+  </div>
+  </section>
+)
 }
+
 
